@@ -11,11 +11,12 @@ import com.course.android.ct.moyosafiapp.databinding.ActivityMainBinding;
 
 public class MainActivity extends FragmentActivity {
 
-    ActivityMainBinding binding;
+    ActivityMainBinding binding; // l'activation de ceci est fait dans le fichier grafle(Module:app)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 //        setContentView(R.layout.activity_main);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
