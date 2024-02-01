@@ -1,4 +1,4 @@
-// Mesure de la température
+// Mesure de la température en utilisant le LM35
 
 int LM35 = A1; //broche pour le capteur de la température
 int LM35_value;
