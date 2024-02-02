@@ -28,4 +28,8 @@
     <style name="vital_sign_tr">
         <item name="android:background">@drawable/vital_sign_tr</item>
     </style>
+
+    <style name="row_setting_fragment">
+        <item name="android:background">@drawable/row_setting_fragment</item>
+    </style>
 </resources>
