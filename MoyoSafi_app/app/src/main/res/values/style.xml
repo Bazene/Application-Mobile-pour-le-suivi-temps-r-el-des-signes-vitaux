@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ToolBarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:background">@color/principal_color</item>
+    </style>
+
+    <style name="otherVitalSigne" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@drawable/all_rounded_corners</item>
+    </style>
+
+    <style name="rounded_corners">
+        <item name="android:background">@drawable/rounded_corners</item>
+    </style>
+
+    <style name="icone_bg">
+        <item name="android:background">@drawable/icone_bg</item>
+    </style>
+
+    <style name="button_bg">
+        <item name="android:background">@drawable/button_bg</item>
+    </style>
+
+    <style name="btn_other_vitalsign">
+        <item name="android:background">@drawable/btn_add_vitalsign</item>
+    </style>
+
+    <style name="vital_sign_tr">
+        <item name="android:background">@drawable/vital_sign_tr</item>
+    </style>
+</resources>
