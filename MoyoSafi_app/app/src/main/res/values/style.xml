@@ -32,4 +32,12 @@
     <style name="row_setting_fragment">
         <item name="android:background">@drawable/row_setting_fragment</item>
     </style>
+
+    <style name="MyListViewItemStyle">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="all_rounded_corners">
+        <item name="android:background">@drawable/all_rounded_corners</item>
+    </style>
 </resources>
