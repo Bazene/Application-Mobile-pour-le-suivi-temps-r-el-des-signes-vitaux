@@ -3,15 +3,12 @@ package com.course.android.ct.moyosafiapp;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,22 +19,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
-import java.util.UUID;
 
 public class BluetoothActivity extends AppCompatActivity {
+
+    public static final int MESSAGE_CONNECTED = 1;
+    public static final int MESSAGE_DISCONNECTED = 2;
 
     // GLOBAL VARIABLES
     BluetoothAdapter myBluetoothAdapter; // variable which help us to check if the device support Bluetooth or not
     BroadcastReceiver bluetoothStateReceiver;
 
-    InputStream inputStream;
-    ByteArrayOutputStream byteArrayOutputStream;
 
     String all_data_received;
     String receivedData;
@@ -52,13 +46,31 @@ public class BluetoothActivity extends AppCompatActivity {
     TextView text_input_stream;
     ScrollView scroll_paired_and_paired_new_device;
 
-    UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    BluetoothSocket bluetoothSocket;
-
-    private ArrayAdapter<String> devicesArrayAdapter;
-
     Intent bt_enabling_intent;
     int request_code_for_enable ;
+
+    // RECEPTION DES MESSAGES DEPUIS LE THREAD BLUETOOTH
+    private BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int eventType = intent.getIntExtra("event", -1);
+
+            switch (eventType) {
+                case MESSAGE_CONNECTED:
+                    String deviceName = intent.getStringExtra("deviceName");
+                    Toast.makeText(getApplicationContext(), "Connexion success", Toast.LENGTH_SHORT).show();
+                    listview_bluetooth_paired.setVisibility(View.GONE);
+                    text_connection.setText(deviceName+" - Connected");
+                    text_connection.setVisibility(View.VISIBLE);
+                    break;
+
+                case MESSAGE_DISCONNECTED:
+                    Toast.makeText(getApplicationContext(), "Error : Please connect to Device you paired with your phone", Toast.LENGTH_LONG).show();
+                    text_connection.setVisibility(View.GONE);
+                    break;
+            }
+        }
+    };
 
     public BluetoothActivity() {
         //require an empty constructor
@@ -111,100 +123,20 @@ public class BluetoothActivity extends AppCompatActivity {
                         // Affichez l'élément dans un Toast ou effectuez toute autre action nécessaire
                         Toast.makeText(getApplicationContext(), "Trying to connect with " + device.getName(), Toast.LENGTH_SHORT).show();
 
-                        //Lancez un Thread pour gérer la connexion Bluetooth en arrière-plan
-                        ConnectBluetoothThread connectThread = new ConnectBluetoothThread(device);
-                        connectThread.start();
+                        System.out.println("*********************** Trying to connect with *****************");
+
+                        // *********************** CONNECTION ENTRE L'ACTIVITE ET LE SERVICE **************************
+                        Intent serviceBluetoothIntent = new Intent(BluetoothActivity.this, BluetoothService.class); // Création d'une Intent pour démarrer le service Bluetooth
+                        serviceBluetoothIntent.putExtra("SELECTED_BLUETOOTH_DEVICE", device); // Ajoutez le BluetoothDevice à l'Intent
+
+                        // Enregistrez le récepteur de diffusion locale (avant de demarrer le service)
+                        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(bluetoothReceiver, new IntentFilter("bluetooth-event"));
+
+                        startService(serviceBluetoothIntent); // Démarrez le service
                     }
                 }
             }
         });
-    }
-
-    private class ConnectBluetoothThread extends Thread {
-        private BluetoothDevice device;
-
-        public ConnectBluetoothThread(BluetoothDevice device) {
-            this.device = device;
-        }
-
-        @SuppressLint("MissingPermission")
-        @Override
-        public void run() {
-            try {
-//                System.out.println("++++++++ try okay ++++++++++++");
-                // Socket allow to make connection between tow devices
-                bluetoothSocket = device.createRfcommSocketToServiceRecord(uuid); // création d'un socket (point de connexion) Bluetooth de type RFCOMM (Radio Frequency Communication) entre 2 appareils
-                myBluetoothAdapter.cancelDiscovery(); // Annulez la découverte Bluetooth pour éviter les interférences
-                bluetoothSocket.connect(); // Connectez-vous au socket Bluetooth
-
-                if(bluetoothSocket.isConnected()) {
-                    System.out.println("++++++++++++++++++++++++++++++ Vous etes connecter +++++++++++++++++++++++++++++++++++++");
-                    // Obtenez le nom du périphérique connecté
-                    String connectedDeviceName = bluetoothSocket.getRemoteDevice().getName();
-
-                    // Affichez les informations dans le TextView
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            listview_bluetooth_paired.setVisibility(View.GONE);
-                            text_connection.setText(connectedDeviceName + " - Connected");
-                            text_connection.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-                    // Affichez le message de connexion réussie
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Connexion success", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    // RECUPERATION DES DONNEES D'ENTREES
-                    inputStream = bluetoothSocket.getInputStream(); // on obtient le flux d'entrée Bluetooth
-
-                    byte[] buffer = new byte[1024]; // création d'un tampon pour stocker les données lues
-                    int bytesRead; // variable qui va contenir la donnée lue depuis le flux d'entrée dans le buffer
-//                    byteArrayOutputStream = new ByteArrayOutputStream();
-
-                    while (true) {
-                        bytesRead = inputStream.read(buffer);
-                        receivedData = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
-                        all_data_received = all_data_received + receivedData;
-
-                        System.out.println("+++++++++++++++++++++++++++ Les donnees sont encours de reception +++++++++++++++++++++++++++++++++");
-                        System.out.println("+++++++++++++++++++++++++++"+receivedData+"++++++++++++++++++++++++++");
-
-                        if(receivedData.contains("\n")) {
-                            System.out.println("++++++++++++++++++++++++++++++"+receivedData+"+++++++++++++++++++++++++++++++++++++");
-                            System.out.println("++++++++++++++++++++++++++++++"+all_data_received+"+++++++++++++++++++++++++++++++++++++");
-
-                            Handler handler = new Handler(Looper.getMainLooper());
-
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    text_input_stream.setText(all_data_received);
-                                    all_data_received = "";
-                                }
-                            });
-                        }
-                    }
-
-                }
-            } catch (IOException e) {
-                Log.e("Bluetooth", "Erreur de connexion Bluetooth", e);
-
-                System.out.println("+++++++++++++++++++++++++++++ Connexion echouer ++++++++++++++++++++++++++++++");
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Error : Please connect to Device you paired with your phone", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
     }
 
     @SuppressLint("MissingPermission")
@@ -235,13 +167,15 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     public void on_off_bluetooth_function() {
-        //  Consiste à vérifier la disponibilité du Bluetooth sur le dispositif, demande à l'utilisateur d'activer le Bluetooth s'il ne l'est pas, rechercher des périphériques Bluetooth si le Bluetooth est activé
         switch_text_view.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("MissingPermission")
             @Override
             public void onClick(View v) {
                 if (myBluetoothAdapter == null) {
                     Toast.makeText(getApplicationContext(), "Bluetooth is not support on this Device", Toast.LENGTH_SHORT).show();
+                    switch_text_view.setClickable(false);
+                    Drawable newIcon = getDrawable(R.drawable.group_switch_3);
+                    switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
                 }
                 else {
                     if (!myBluetoothAdapter.isEnabled()) { // Let's check whether Bluetooth is deactivated in order to activate it
@@ -271,9 +205,9 @@ public class BluetoothActivity extends AppCompatActivity {
         });
     }
 
-    // méthode appelée lorsque l'activité lancée avec startActivityForResult a terminé son travail (callback de l'activité bt_enabling_intent)
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) { // méthode appelée lorsque l'activité lancée avec startActivityForResult a terminé son travail (callback de l'activité bt_enabling_intent)
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) {
@@ -294,8 +228,11 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     public void control_state_of_bluetooth_on_create_activity() {
-                if (myBluetoothAdapter == null) {
+        if (myBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(), "Bluetooth is not support on this Device", Toast.LENGTH_SHORT).show();
+            switch_text_view.setClickable(false);
+            Drawable newIcon = getDrawable(R.drawable.group_switch_3);
+            switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
         }
         else {
             if (!myBluetoothAdapter.isEnabled()) { // Let's check whether Bluetooth is deactivated in order to activate it
@@ -353,8 +290,10 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Désenregistrez le récepteur de diffusion locale lors de la destruction du service
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
 
-        // N'oubliez pas de désenregistrer le BroadcastReceiver lors de la destruction de l'activité
+        // On désenregistre le BroadcastReceiver lors de la destruction de l'activité
         unregisterReceiver(bluetoothStateReceiver);
     }
 }
