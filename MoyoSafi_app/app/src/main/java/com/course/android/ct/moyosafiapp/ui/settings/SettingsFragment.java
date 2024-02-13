@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+
+import com.course.android.ct.moyosafiapp.BluetoothActivity;
+import com.course.android.ct.moyosafiapp.R;
 
 public class SettingsFragment extends Fragment {
 

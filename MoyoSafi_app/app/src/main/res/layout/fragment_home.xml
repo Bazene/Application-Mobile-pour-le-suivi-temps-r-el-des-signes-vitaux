@@ -1,400 +1,524 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_news_rootview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/principal_color">
 
     <LinearLayout
-        android:id="@+id/fragment_news_rootview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/principal_color"
-        tools:context="com.course.android.ct.moyosafi.Controllers.Fragments.NewsFragment">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:weightSum="3">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Etat de santé"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Date du jour"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:gravity="end" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/layout_frequence_cardiaque_tr"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="20dp"
-            android:weightSum="3">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Etat de santé"
+                android:gravity="center"
+                android:text="76BPM"
+                android:textStyle="bold"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="5dp"
+                android:text="Fréquence c..."
+                android:textColor="@color/fourth_color"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Normal"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:textSize="20dp"/>
+                android:background="@drawable/vital_sign_tr"/>
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Date du jour"
-                android:textSize="20dp"
-                android:textColor="@color/white"
-                android:gravity="end" />
         </LinearLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/layout_spo2_tr"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp">
+            android:layout_marginLeft="23dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/layout_frequence_cardiaque_tr"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/layout_frequence_cardiaque_tr"
-                android:layout_width="110dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:text="96%"
+                android:textStyle="bold"
+                android:textColor="@color/white"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="76BPM"
-                    android:gravity="center"
-                    android:textColor="@color/white"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Fréquence c..."
-                    android:gravity="center"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/fourth_color"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Normal"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:textColor="@color/white"
-                    app:theme="@style/vital_sign_tr"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_spo2_tr"
-                android:layout_width="110dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="23dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/layout_frequence_cardiaque_tr"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:layout_marginBottom="5dp"
+                android:text="SpO2"
+                android:textStyle="bold"
+                android:textColor="@color/fourth_color"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="76BPM"
-                    android:gravity="center"
-                    android:textColor="@color/white"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="SpO2"
-                    android:gravity="center"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/fourth_color"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Normal"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:textColor="@color/white"
-                    app:theme="@style/vital_sign_tr"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_temperature_tr"
-                android:layout_width="110dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Normal"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:background="@drawable/vital_sign_tr"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="37 *C"
-                    android:gravity="center"
-                    android:textColor="@color/white"/>
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Temperature"
-                    android:gravity="center"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/fourth_color"/>
+        <LinearLayout
+            android:id="@+id/layout_temperature_tr"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Normal"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:textColor="@color/white"
-                    app:theme="@style/vital_sign_tr"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="37°C"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/white"/>
 
-            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temperature"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/fourth_color"/>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Normal"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:background="@drawable/vital_sign_tr"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:gravity="center"
-            android:background="@drawable/rounded_corners"
-            android:padding="15dp">
+            android:padding="15dp"
+            android:background="@drawable/rounded_corners">
 
             <LinearLayout
-                android:id="@+id/layoutPressionArterielle"
-                android:layout_width="185dp"
+                android:id="@+id/layout_fc_spo2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp"
+                android:weightSum="3"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:theme="@style/otherVitalSigne">
+                app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layout_frequence_cardique"
+                    android:layout_width="160dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:orientation="vertical"
                     android:padding="10dp"
-                    android:src="@drawable/icone_blood"
-                    app:theme="@style/icone_bg" />
+                    android:background="@drawable/home_layout_vital_sign">
 
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="Pression arté..."
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:src="@drawable/icone_frequence_cardiaque"
+                        android:background="@drawable/icone_bg"
+                        android:contentDescription="TODO" />
 
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="--/-- mmmHg" />
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:text="Fréquence car..."
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="150dp"
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="---"
+                            android:textSize="20dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="BPM"
+                            android:textSize="16dp"
+                            android:textColor="@color/gray_c"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_gravity="center"
+                        android:padding="10dp"
+                        android:text="Etat Normal"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textAlignment="center"
+                        android:background="@drawable/button_bg"/>
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/layout_spo2"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
                     android:padding="10dp"
-                    android:text="Enregistrer"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    app:theme="@style/button_bg" />
+                    android:background="@drawable/home_layout_vital_sign">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:src="@drawable/icone_spo2"
+                        android:background="@drawable/icone_bg" />
+
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:text="SpO2"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="---"
+                            android:textSize="20dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="%"
+                            android:textSize="16dp"
+                            android:textColor="@color/gray_c"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_gravity="center"
+                        android:padding="10dp"
+                        android:text="Etat normal"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textAlignment="center"
+                        android:background="@drawable/button_bg" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_temp_pression"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_fc_spo2">
+
+                <LinearLayout
+                    android:id="@+id/layout_temperature"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:background="@drawable/home_layout_vital_sign"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:src="@drawable/icone_thermostat_24"
+                        android:background="@drawable/icone_bg" />
+
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:text="Température"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="---"
+                            android:textSize="20dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="°C"
+                            android:textSize="16dp"
+                            android:textColor="@color/gray_c"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_gravity="center"
+                        android:padding="10dp"
+                        android:text="Etat Normal"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textAlignment="center"
+                        android:background="@drawable/button_bg"/>
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:id="@+id/layoutPressionArterielle"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:background="@drawable/home_layout_vital_sign">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/icone_bg"
+                        android:padding="10dp"
+                        android:src="@drawable/icone_pression_arterielle" />
+
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:text="Pression arté ..."
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- / --"
+                            android:textSize="20dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="@color/black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="mmHg"
+                            android:textSize="16dp"
+                            android:textColor="@color/gray_c"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_gravity="center"
+                        android:padding="10dp"
+                        android:text="Enregistrer"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textAlignment="center"
+                        android:background="@drawable/button_bg" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_glycemie"
-                android:layout_width="185dp"
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:orientation="vertical"
                 android:padding="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:theme="@style/otherVitalSigne">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_temp_pression"
+                android:background="@drawable/home_layout_vital_sign">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:src="@drawable/icone_blood"
-                    app:theme="@style/icone_bg" />
+                    android:src="@drawable/icone_glycometre"
+                    android:background="@drawable/icone_bg" />
 
                 <TextView
-                    android:layout_width="150dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="Glycémie"
+                    android:textColor="@color/black"
                     android:textSize="20dp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="150dp"
+                <LinearLayout
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
-                    android:text="-- mmmol/L" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="---"
+                        android:textSize="20dp"
+                        android:layout_marginRight="5dp"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="mmol/L"
+                        android:textSize="16dp"
+                        android:textColor="@color/gray_c"/>
+
+                </LinearLayout>
 
                 <TextView
-                    android:layout_width="150dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:padding="10dp"
                     android:text="Enregistrer"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    app:theme="@style/button_bg" />
+                    android:textAlignment="center"
+                    android:background="@drawable/button_bg" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_frequence_cardique"
-                android:layout_width="185dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutPressionArterielle"
-                app:theme="@style/otherVitalSigne">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:src="@drawable/icone_frequence_cardiaque"
-                    app:theme="@style/icone_bg" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="Fréquence car..."
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="-- BPM" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="Etat Normal"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    app:theme="@style/button_bg" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_spo2"
-                android:layout_width="185dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_glycemie"
-                app:theme="@style/otherVitalSigne">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:src="@drawable/icone_blood"
-                    app:theme="@style/icone_bg" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="SpO2"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="-- mmmol/L" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="Etat normal"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    app:theme="@style/button_bg" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_temperature"
-                android:layout_width="185dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:padding="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_frequence_cardique"
-                app:theme="@style/otherVitalSigne">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:src="@drawable/icone_blood"
-                    app:theme="@style/icone_bg" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="Température"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="-- °C" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="Etat normal"
-                    android:textColor="@color/third_color"
-                    android:textStyle="bold"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:padding="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_temperature">
-
-                <Button
-                    android:id="@+id/btn_edit_vital_sign"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="SAISIR AUTRES DONNEES VITAUX"
-                    android:textColor="@color/white"
-                    app:theme="@style/btn_other_vitalsign"/>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

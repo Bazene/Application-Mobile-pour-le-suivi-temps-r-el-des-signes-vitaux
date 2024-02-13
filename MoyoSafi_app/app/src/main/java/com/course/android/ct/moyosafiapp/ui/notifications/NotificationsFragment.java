@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui.notifications;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.course.android.ct.moyosafiapp.R;
 
 /**
  * A simple {@link Fragment} subclass.

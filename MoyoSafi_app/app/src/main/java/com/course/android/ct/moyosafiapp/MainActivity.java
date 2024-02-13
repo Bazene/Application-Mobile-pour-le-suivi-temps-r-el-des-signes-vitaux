@@ -6,6 +6,9 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.course.android.ct.moyosafiapp.ui.home.HomeFragment;
+import com.course.android.ct.moyosafiapp.ui.notifications.NotificationsFragment;
+import com.course.android.ct.moyosafiapp.ui.settings.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
