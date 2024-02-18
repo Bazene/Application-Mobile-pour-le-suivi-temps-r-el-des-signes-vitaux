@@ -6,4 +6,8 @@
     <string name="Bluetooth">Bluetooth</string>
     <string name="Disable">Disable</string>
     <string name="Enable">Enable</string>
+    <string name="inscription">S\'inscrire</string>
+    <string name="Login">Se connecter</string>
+    <string name="create">Créer</string>
+    <string name="compte">Compte</string>
 </resources>

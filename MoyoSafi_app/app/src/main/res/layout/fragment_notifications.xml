@@ -12,6 +12,6 @@
         android:textColor="@color/white"
         android:textSize="40dp"
         android:gravity="center"
-        android:background="@color/third_color"/>
+        android:background="@color/white"/>
 
 </FrameLayout>

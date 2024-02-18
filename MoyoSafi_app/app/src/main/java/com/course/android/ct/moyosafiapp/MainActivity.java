@@ -28,6 +28,8 @@ public class MainActivity extends FragmentActivity {
 
         // The launch fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout, homeFragment).commit();
+
+        // Fragment selected
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
