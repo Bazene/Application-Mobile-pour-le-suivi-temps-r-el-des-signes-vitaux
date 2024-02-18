@@ -52,7 +52,6 @@
             android:background="@drawable/row_setting_fragment"
             android:visibility="gone">
 
-
             <TextView
                 android:id="@+id/date_of_notification"
                 android:layout_width="wrap_content"

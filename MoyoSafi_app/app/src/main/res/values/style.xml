@@ -16,8 +16,4 @@
     <style name="MyListViewItemStyle">
         <item name="android:background">@color/white</item>
     </style>
-
-    <style name="all_rounded_corners">
-        <item name="android:background">@drawable/home_layout_vital_sign</item>
-    </style>
 </resources>

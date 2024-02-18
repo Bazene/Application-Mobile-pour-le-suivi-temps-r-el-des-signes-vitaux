@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.course.android.ct.moyosafiapp.R;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class HomeFragment extends Fragment implements VitalSignDialogFragment.VitalSignDialogListener {
     // DEFAULT CONSTRUCT
     public HomeFragment() {
@@ -18,6 +21,7 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
     }
 
     // VARIABLES
+    private TextView date_in_home_screen;
     private TextView systol_textView;
     private TextView diastol_textView;
     private TextView glycemie_textView;
@@ -34,20 +38,36 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // 2-  Views
+        date_in_home_screen = view.findViewById(R.id.date_in_home_screen);
+
         systol_textView = view.findViewById(R.id.systol_textView);
         diastol_textView = view.findViewById(R.id.diastol_textView);
         glycemie_textView = view.findViewById(R.id.glycemie_textView);
         modify_imageView = view.findViewById(R.id.modify_imageView);
 
         // ACTIONS
-        modify_imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("++++++++++++++++++++++++++ l'icone edit est cliquer ++++++++++++++++++++++++++");
+        // 1- to date_in_home_screen view
+            LocalDateTime now = null; // date and actual time variable
+            DateTimeFormatter formatterDate = null; // date format variable
+            String actualDate = "";
 
-                openDialog();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                now = LocalDateTime.now(); // get date and actual time
+                formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // format date
+                actualDate = now.format(formatterDate); // convert date in string
             }
-        });
+
+            date_in_home_screen.setText(actualDate); //display the result
+
+        // 2- to modify_imageView
+            modify_imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    System.out.println("++++++++++++++++++++++++++ l'icone edit est cliquer ++++++++++++++++++++++++++");
+
+                    openDialog();
+                }
+            });
 
         return view;
     }

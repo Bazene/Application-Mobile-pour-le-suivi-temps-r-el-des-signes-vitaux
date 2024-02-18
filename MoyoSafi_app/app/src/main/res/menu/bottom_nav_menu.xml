@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:title="Home"
+        android:title="@string/home"
         android:id="@+id/home"
         android:icon="@drawable/baseline_home_24"
         android:background="@color/nav_bottom_navigation_view_color">10sp</item>
 
     <item
-        android:title="Notifications"
+        android:title="@string/notifications"
         android:id="@+id/notifications"
         android:icon="@drawable/baseline_notifications_active_24"
         android:background="@color/nav_bottom_navigation_view_color">10sp</item>
 
     <item
-        android:title="Settings"
+        android:title="@string/Settings"
         android:id="@+id/settings"
         android:icon="@drawable/baseline_settings_24">10sp</item>
 <!--    app:cnb_backgroundColor="@color/white"-->

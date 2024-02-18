@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="#FFFFFF"/>
+
+    <corners android:radius="100dp" />
+
+    <stroke
+        android:color="@color/principal_color"
+        android:width="5dp" /> <!-- Ajustez la largeur de la bordure selon vos besoins -->
+</shape>

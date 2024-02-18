@@ -9,14 +9,29 @@
     android:background="@color/white"
     tools:context=".ui.settings.SettingsFragment">
 
-    <TextView
-        android:id="@+id/general_title"
+    <LinearLayout
+        android:id="@+id/general_title_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Général"
-        android:textColor="@color/black"/>
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/general_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Général"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="35dp"
+            android:layout_height="3sp"
+            android:layout_marginLeft="2dp"
+            android:text=""
+            android:background="@color/principal_color"/>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profile_bloc"
@@ -25,16 +40,16 @@
         android:layout_marginTop="25px"
         android:background="@drawable/row_setting_fragment"
         android:padding="30px"
-        app:layout_constraintTop_toBottomOf="@+id/general_title">
+        app:layout_constraintTop_toBottomOf="@+id/general_title_layout">
 
         <TextView
             android:id="@+id/profile_text"
-            android:layout_width="80dp"
+            android:layout_width="90dp"
             android:layout_height="21dp"
             android:drawableLeft="@drawable/baseline_person_outline_24"
             android:drawablePadding="20px"
             android:gravity="center_vertical"
-            android:text="Profile"
+            android:text="@string/Profile"
             android:textColor="@color/black"
             android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -81,7 +96,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/bluetooth_text"
             app:layout_constraintEnd_toStartOf="@+id/chevron_bluetooth"
-            android:text="Disconnected"
+            android:text="Connecter"
             android:textSize="18dp"
             android:textColor="@color/black"/>
 
@@ -92,6 +107,96 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:drawableRight="@drawable/baseline_chevron_right_24"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/politique_layout_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_to_bluetooth"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/politique_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Politique"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="3sp"
+            android:layout_marginLeft="2dp"
+            android:text=""
+            android:background="@color/principal_color"/>
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/guide_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/row_setting_fragment"
+        android:padding="30px"
+        app:layout_constraintTop_toBottomOf="@+id/politique_layout_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="21dp"
+            android:drawableLeft="@drawable/guide"
+            android:drawablePadding="20px"
+            android:gravity="center_vertical"
+            android:text="Guide d'utilisation"
+            android:textColor="@color/black"
+            android:textSize="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:drawableRight="@drawable/baseline_chevron_right_24"
+            android:textColor="@color/gray_color"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/version_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/row_setting_fragment"
+        android:padding="30px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="21dp"
+            android:drawableLeft="@drawable/version"
+            android:drawablePadding="20px"
+            android:gravity="center_vertical"
+            android:text="Version"
+            android:textColor="@color/black"
+            android:textSize="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="v1.0.0"
+            android:textColor="@color/gray_color"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

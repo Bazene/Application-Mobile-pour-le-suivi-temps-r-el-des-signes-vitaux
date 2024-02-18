@@ -30,14 +30,31 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Date du jour"
-            android:textSize="20dp"
-            android:textColor="@color/white"
-            android:gravity="end" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/date_in_home_screen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date du jour"
+                android:textSize="20dp"
+                android:textColor="@color/white"
+                android:gravity="end" />
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="3dp"
+                android:gravity="end"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="32dp"
+                android:text=""
+                android:background="@color/third_color"/>
+        </LinearLayout>
+
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
