@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.settings.ProfileDialogFragment"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_corners">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MODIFIER VOTRE PROFILE"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:background="@color/principal_color"
+        android:paddingTop="17dp"
+        android:paddingBottom="17dp"/>
+
+
+    <EditText
+        android:id="@+id/new_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="text"
+        android:hint="Entrer le noms"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_c"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+
+    <EditText
+        android:id="@+id/new_phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="phone"
+        android:hint="Entrer votre numéro de téléphont"
+        android:textColorHint="@color/gray_c"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <EditText
+        android:id="@+id/new_age"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="number"
+        android:hint="Entrer l'âge"
+        android:textColorHint="@color/gray_c"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <EditText
+        android:id="@+id/new_commune"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="text"
+        android:hint="Commune"
+        android:textColorHint="@color/gray_c"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <EditText
+        android:id="@+id/new_quater"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="text"
+        android:hint="Quartier"
+        android:textColorHint="@color/gray_c"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <RadioGroup
+        android:id="@+id/new_radio_group_gender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="5dp"
+            android:text="Genre :"
+            android:textSize="16sp"
+            android:textColor="@color/gray_c"/>
+
+        <RadioButton
+            android:id="@+id/new_radio_btn_man"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Masculin"
+            android:textColor="@color/gray_c" />
+
+        <RadioButton
+            android:id="@+id/new_radio_btn_women"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Féminin"
+            android:textColor="@color/gray_c"/>
+    </RadioGroup>
+
+</LinearLayout>

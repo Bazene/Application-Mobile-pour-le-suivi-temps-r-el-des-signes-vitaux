@@ -16,4 +16,8 @@
     <style name="MyListViewItemStyle">
         <item name="android:background">@color/white</item>
     </style>
+
+    <style name="icon_profile_bg">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

@@ -10,6 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        // Add for taking picture
+        maven {url "https://jitpack.io"}
     }
 }
 rootProject.name = "Moyo Safi App"
