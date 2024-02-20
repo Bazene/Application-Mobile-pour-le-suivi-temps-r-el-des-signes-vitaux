@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.course.android.ct.moyosafiapp.MainActivity;
+import com.course.android.ct.moyosafiapp.ui.MainActivity;
 import com.course.android.ct.moyosafiapp.R;
 
 public class LoginFragment extends Fragment {

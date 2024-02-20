@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.ui.home.HomeFragment;
 import com.course.android.ct.moyosafiapp.ui.notifications.NotificationsFragment;
 import com.course.android.ct.moyosafiapp.ui.settings.SettingsFragment;

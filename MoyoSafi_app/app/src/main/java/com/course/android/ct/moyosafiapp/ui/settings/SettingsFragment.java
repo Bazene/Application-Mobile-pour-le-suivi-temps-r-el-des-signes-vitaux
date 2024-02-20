@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.course.android.ct.moyosafiapp.BluetoothActivity;
-import com.course.android.ct.moyosafiapp.ProfilActivity;
+import com.course.android.ct.moyosafiapp.ui.BluetoothActivity;
+import com.course.android.ct.moyosafiapp.ui.ProfilActivity;
 import com.course.android.ct.moyosafiapp.R;
 
 public class SettingsFragment extends Fragment {

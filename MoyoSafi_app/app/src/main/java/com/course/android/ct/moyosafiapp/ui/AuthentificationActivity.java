@@ -1,9 +1,10 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.ui.authentification.LoginFragment;
 
 public class AuthentificationActivity extends AppCompatActivity {

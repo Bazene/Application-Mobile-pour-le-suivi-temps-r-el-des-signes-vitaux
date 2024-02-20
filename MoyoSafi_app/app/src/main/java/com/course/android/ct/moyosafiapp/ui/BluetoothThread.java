@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;

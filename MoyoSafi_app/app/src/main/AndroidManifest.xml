@@ -18,10 +18,10 @@
         android:theme="@style/Theme.MoyoSafiApp"
         tools:targetApi="31">
         <activity
-            android:name=".ProfilActivity"
+            android:name=".ui.ProfilActivity"
             android:exported="false" />
         <activity
-            android:name=".AuthentificationActivity"
+            android:name=".ui.AuthentificationActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,11 +29,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".BluetoothActivity" />
+        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.BluetoothActivity" />
 
         <service
-            android:name=".BluetoothService"
+            android:name=".ui.BluetoothService"
             android:enabled="true"
             android:exported="true" />
     </application>

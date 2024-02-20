@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui;
 
 import android.app.Service;
 import android.bluetooth.BluetoothDevice;

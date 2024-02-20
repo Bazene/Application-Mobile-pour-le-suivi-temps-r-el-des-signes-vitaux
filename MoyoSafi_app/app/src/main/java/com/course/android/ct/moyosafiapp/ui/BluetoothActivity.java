@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -21,6 +21,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.course.android.ct.moyosafiapp.R;
+
 import java.util.Set;
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -28,7 +30,7 @@ public class BluetoothActivity extends AppCompatActivity {
     public static final int MESSAGE_CONNECTED = 1;
     public static final int MESSAGE_DISCONNECTED = 2;
 
-    // GLOBAL VARIABLES
+    // VARIABLES
     BluetoothAdapter myBluetoothAdapter; // variable which help us to check if the device support Bluetooth or not
     BroadcastReceiver bluetoothStateReceiver;
 

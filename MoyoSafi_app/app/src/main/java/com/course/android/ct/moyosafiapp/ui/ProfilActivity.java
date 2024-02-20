@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp;
+package com.course.android.ct.moyosafiapp.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,8 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.injections.ViewModelFactory;
 import com.course.android.ct.moyosafiapp.ui.settings.ProfileDialogFragment;
+import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -23,6 +27,8 @@ import java.util.Base64;
 public class ProfilActivity extends AppCompatActivity implements ProfileDialogFragment.ProfileDialogListener {
 
     //VARIABLES
+    private PatientViewModel patientViewModel; // initialisation of our ViewModel class
+
     private TextView profile_to_settings;
 
     private FloatingActionButton floating_action_button;
@@ -43,7 +49,14 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_profil);
 
-            // INITIALISATION (GET VIEWS)
+            System.out.println("+++++++++++++++++++++ ça marche +++++++++++++++++++++=");
+
+            // VIEW MODEL
+            // configuration of our view
+            configureViewModel();
+
+
+            // Views
                 profile_to_settings = findViewById(R.id.profile_to_settings);
 
                 floating_action_button = findViewById(R.id.floating_action_button);
@@ -146,4 +159,31 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
                     return null;
                 }
         }
+
+    // ALL FOR VIEW MODEL
+    // 1- configuration of our view model
+    private void configureViewModel() {
+            this.patientViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PatientViewModel.class) ;
+            this.patientViewModel.init(1);
+    }
+
+    // 3 - Create a new Patient
+//    private void insertPatient() {
+//
+//        patientViewModel.insertPatient("BAZENE","SERGE", "Amos", "Mail", "bazenesergeamos0@gmail.com","" )
+//
+//        binding.todoListActivityEditText.setText("");
+//
+//    }
+//
+//    // 5 - Update view (picture)
+//    private void updateView(User user) {
+//
+//        if (user == null) return;
+//
+//        binding.todoListActivityHeaderProfileText.setText(user.getUsername());
+//
+//        Glide.with(this).load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(binding.todoListActivityHeaderProfileImage);
+//
+//    }
 }
