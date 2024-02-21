@@ -1,9 +1,9 @@
-package com.course.android.ct.moyosafiapp.Repository;
+package com.course.android.ct.moyosafiapp.models.Repository;
 
 import androidx.lifecycle.LiveData;
 
-import com.course.android.ct.moyosafiapp.database.dao.NotificationsDao;
-import com.course.android.ct.moyosafiapp.database.models.Notifications;
+import com.course.android.ct.moyosafiapp.models.dao.NotificationsDao;
+import com.course.android.ct.moyosafiapp.models.entity.Notifications;
 
 import java.util.List;
 

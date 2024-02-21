@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp.database.dao;
+package com.course.android.ct.moyosafiapp.models.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -6,7 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.course.android.ct.moyosafiapp.database.models.Notifications;
+import com.course.android.ct.moyosafiapp.models.entity.Notifications;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
-package com.course.android.ct.moyosafiapp.Repository;
+package com.course.android.ct.moyosafiapp.models.Repository;
 
 import androidx.lifecycle.LiveData;
 
-import com.course.android.ct.moyosafiapp.database.dao.PatientDao;
-import com.course.android.ct.moyosafiapp.database.models.Patient;
+import com.course.android.ct.moyosafiapp.models.dao.PatientDao;
+import com.course.android.ct.moyosafiapp.models.entity.Patient;
 
 import java.util.List;
 

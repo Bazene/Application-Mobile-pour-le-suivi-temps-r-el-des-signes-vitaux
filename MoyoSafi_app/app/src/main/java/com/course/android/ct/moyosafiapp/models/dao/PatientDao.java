@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp.database.dao;
+package com.course.android.ct.moyosafiapp.models.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,7 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.course.android.ct.moyosafiapp.database.models.Patient;
+import com.course.android.ct.moyosafiapp.models.entity.Patient;
 
 import java.util.List;
 

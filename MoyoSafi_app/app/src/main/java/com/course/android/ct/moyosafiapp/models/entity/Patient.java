@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp.database.models;
+package com.course.android.ct.moyosafiapp.models.entity;
 
 
 import androidx.annotation.NonNull;
@@ -29,19 +29,20 @@ public class Patient {
     private int patient_age;
     private long patient_size;
     private long patient_weight;
+    private String role;
 
 
     // CONSTRUCT
-    public Patient(String patient_name, String patient_postname, String patient_surname, String patient_gender, String patient_mail, int patient_phone_number, String patient_password, String patient_date_created, int patient_age) {
+    public Patient(String patient_name, String patient_postname, String patient_surname, String patient_gender, String patient_mail, String patient_password, String patient_date_created, int patient_age, String role) {
         this.patient_name = patient_name;
         this.patient_postname = patient_postname;
         this.patient_surname = patient_surname;
         this.patient_gender = patient_gender;
         this.patient_mail = patient_mail;
-        this.patient_phone_number = patient_phone_number;
         this.patient_password = patient_password;
         this.patient_date_created = patient_date_created;
         this.patient_age = patient_age;
+        this.role = role;
     }
 
 
@@ -164,5 +165,13 @@ public class Patient {
 
     public void setPatient_weight(long patient_weight) {
         this.patient_weight = patient_weight;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

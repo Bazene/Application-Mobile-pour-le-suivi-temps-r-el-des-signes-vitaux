@@ -1,10 +1,10 @@
-package com.course.android.ct.moyosafiapp.Repository;
+package com.course.android.ct.moyosafiapp.models.Repository;
 
 
 import androidx.lifecycle.LiveData;
 
-import com.course.android.ct.moyosafiapp.database.dao.VitalSignDao;
-import com.course.android.ct.moyosafiapp.database.models.VitalSign;
+import com.course.android.ct.moyosafiapp.models.dao.VitalSignDao;
+import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
 import java.util.List;
 

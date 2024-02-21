@@ -4,14 +4,16 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.course.android.ct.moyosafiapp.Repository.NotificationsRepository;
-import com.course.android.ct.moyosafiapp.Repository.PatientRepository;
-import com.course.android.ct.moyosafiapp.Repository.VitalSignRepository;
-import com.course.android.ct.moyosafiapp.database.models.Patient;
-import com.course.android.ct.moyosafiapp.database.models.VitalSign;
+import com.course.android.ct.moyosafiapp.models.Repository.NotificationsRepository;
+import com.course.android.ct.moyosafiapp.models.Repository.PatientRepository;
+import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRepository;
+import com.course.android.ct.moyosafiapp.models.entity.Patient;
+import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class PatientViewModel extends ViewModel {
 
@@ -20,14 +22,15 @@ public class PatientViewModel extends ViewModel {
     private NotificationsRepository notificationsRepository;
     private VitalSignRepository vitalSignRepository;
 
-    private Executor executor;
+//    private Executor executor;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     // DATA
     @Nullable
     private LiveData<Patient> curentPatient;
 
     // CONSTRUCT
-    public PatientViewModel(PatientRepository patientRepository, NotificationsRepository notificationsRepository, VitalSignRepository vitalSignRepository, Executor executor) {
+    public PatientViewModel(PatientRepository patientRepository, NotificationsRepository notificationsRepository, VitalSignRepository vitalSignRepository, ExecutorService executor) {
 
         this.patientRepository = patientRepository;
         this.notificationsRepository = notificationsRepository;
@@ -48,10 +51,16 @@ public class PatientViewModel extends ViewModel {
     // --------------------------
     // 1- FOR PATIENT
     // --------------------------
-    public void insertPatient(String patient_name, String patient_postname, String patient_surname, String patient_gender, String patient_mail, int patient_phone_number, String patient_password, String patient_date_created, int patient_age) {
-        executor.execute(()->{
-            patientRepository.insertPatient(new Patient(patient_name, patient_postname, patient_surname, patient_gender, patient_mail, patient_phone_number, patient_password, patient_date_created, patient_age));
-        });
+    public boolean insertPatient(Patient patient) {
+        Future<?> future  = executor.submit(()-> patientRepository.insertPatient(patient));
+        try {
+            future.get(); // future.get() bloque le thread principal jusqu'à ce que la tâche soit terminée (avec succès ou en échec).
+            return true;
+        }catch (Exception e) {
+            return false;
+        }finally {
+            executor.shutdown();
+        }
     }
 
     public void updatePatient(Patient patient) {
@@ -74,10 +83,8 @@ public class PatientViewModel extends ViewModel {
     // --------------------------
     // 2- FOR VITAL SIGN
     // --------------------------
-    public void insertVitalSign(int id_patient, float temperature, int heart_rate, int oxygen_level, int blood_glucose, int systolic_blood, int diastolic_blood, String vital_hour, String vital_date) {
-        executor.execute(()-> {
-            vitalSignRepository.insertVitalSign(new VitalSign(id_patient ,temperature, heart_rate, oxygen_level, blood_glucose, systolic_blood, diastolic_blood, vital_hour, vital_date));
-        });
+    public void insertVitalSign(VitalSign vitalSign) {
+        executor.execute(()-> vitalSignRepository.insertVitalSign(vitalSign));
     }
 
     public void deleteVitalSign(VitalSign vitalSign) {

@@ -12,10 +12,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.course.android.ct.moyosafiapp.R;
-import com.course.android.ct.moyosafiapp.injections.ViewModelFactory;
+import com.course.android.ct.moyosafiapp.databinding.ActivityProfilBinding;
 import com.course.android.ct.moyosafiapp.ui.settings.ProfileDialogFragment;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -27,6 +25,8 @@ import java.util.Base64;
 public class ProfilActivity extends AppCompatActivity implements ProfileDialogFragment.ProfileDialogListener {
 
     //VARIABLES
+    ActivityProfilBinding binding; // link file between
+
     private PatientViewModel patientViewModel; // initialisation of our ViewModel class
 
     private TextView profile_to_settings;
@@ -47,36 +47,23 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_profil);
+
+            // binding will helps us to find all views
+            binding = ActivityProfilBinding.inflate(getLayoutInflater()); // initialisation of binding file
+            setContentView(binding.getRoot());
 
             System.out.println("+++++++++++++++++++++ ça marche +++++++++++++++++++++=");
 
-            // VIEW MODEL
-            // configuration of our view
-            configureViewModel();
-
-
-            // Views
-                profile_to_settings = findViewById(R.id.profile_to_settings);
-
-                floating_action_button = findViewById(R.id.floating_action_button);
-                imageView_profile = findViewById(R.id.imageView_profile);
-
-                edit_profile = findViewById(R.id.edit_profile);
-                user_name = findViewById(R.id.user_name);
-                user_gender = findViewById(R.id.user_gender);
-                user_phone_number = findViewById(R.id.user_phone_number);
-                user_age = findViewById(R.id.user_age);
-                user_commune = findViewById(R.id.user_commune);
-                user_quater = findViewById(R.id.user_quater);
-
+//            // VIEW MODEL
+//            // configuration of our view
+//            configureViewModel();
 
             // ACTIONS
             // 1- to profile_to_settings view
-                profile_to_settings.setOnClickListener(v-> onBackPressed()); // back when pressed
+            binding.profileToSettings.setOnClickListener(v-> onBackPressed()); // back when pressed
 
             // 2- to imageView_profile View
-            floating_action_button.setOnClickListener(new View.OnClickListener() {
+            binding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ImagePicker.with(ProfilActivity.this)
@@ -88,12 +75,12 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
                 });
 
             // 3- to edit_profile view
-                edit_profile.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openDialog();
-                    }
-                });
+            binding.editProfile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openDialog();
+                }
+            });
         }
 
     // 2- onActivityResult
@@ -103,12 +90,12 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
             super.onActivityResult(requestCode, resultCode, date);
             Uri uri = date.getData();
 
-            imageView_profile.setImageURI(uri);
+            binding.imageViewProfile.setImageURI(uri);
             System.out.println("++++++++++++++++++++++++++++"+uri+"+++++++++++++++++++++++++++++++++++++++");
 
             // stocker l'image sous le format string
-            imageView_profile.buildDrawingCache();
-            Bitmap imageBitmap = ((BitmapDrawable) imageView_profile.getDrawable()).getBitmap();
+            binding.imageViewProfile.buildDrawingCache();
+            Bitmap imageBitmap = ((BitmapDrawable) binding.imageViewProfile.getDrawable()).getBitmap();
             String imageString = BitmapToString(imageBitmap);
 
             // récupérer l'image dans la base de données
@@ -126,12 +113,12 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
     // 4- setTextOnMainView
         @Override
         public void setTextOnMainView(String name_text, String phone_number, String age_number, String commune_text , String quater_text, String radioButton_text) {
-            user_name.setText(name_text);
-            user_gender.setText(radioButton_text);
-            user_phone_number.setText(phone_number);
-            user_age.setText((age_number));
-            user_commune.setText(commune_text);
-            user_quater.setText(quater_text);
+            binding.userName.setText(name_text);
+            binding.userGender.setText(radioButton_text);
+            binding.userPhoneNumber.setText(phone_number);
+            binding.userAge.setText((age_number));
+            binding.userCommune.setText(commune_text);
+            binding.userQuater.setText(quater_text);
         }
 
     // 5- bitmap function (wich help us to convert image to string)
@@ -161,11 +148,11 @@ public class ProfilActivity extends AppCompatActivity implements ProfileDialogFr
         }
 
     // ALL FOR VIEW MODEL
-    // 1- configuration of our view model
-    private void configureViewModel() {
-            this.patientViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PatientViewModel.class) ;
-            this.patientViewModel.init(1);
-    }
+//    // 1- configuration of our view model
+//    private void configureViewModel() {
+//            this.patientViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PatientViewModel.class) ;
+//            this.patientViewModel.init(1);
+//    }
 
     // 3 - Create a new Patient
 //    private void insertPatient() {

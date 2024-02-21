@@ -1,4 +1,4 @@
-package com.course.android.ct.moyosafiapp.database.models;
+package com.course.android.ct.moyosafiapp.models.entity;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;

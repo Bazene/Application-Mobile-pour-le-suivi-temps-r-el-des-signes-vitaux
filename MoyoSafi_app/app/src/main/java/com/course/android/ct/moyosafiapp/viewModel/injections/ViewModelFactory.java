@@ -1,19 +1,19 @@
-package com.course.android.ct.moyosafiapp.injections;
+package com.course.android.ct.moyosafiapp.viewModel.injections;
 
 import android.content.Context;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.course.android.ct.moyosafiapp.Repository.NotificationsRepository;
-import com.course.android.ct.moyosafiapp.Repository.PatientRepository;
-import com.course.android.ct.moyosafiapp.Repository.VitalSignRepository;
-import com.course.android.ct.moyosafiapp.database.MoyoSafiDatabase;
+import com.course.android.ct.moyosafiapp.models.MoyoSafiDatabase;
+import com.course.android.ct.moyosafiapp.models.Repository.NotificationsRepository;
+import com.course.android.ct.moyosafiapp.models.Repository.PatientRepository;
+import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRepository;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
@@ -27,7 +27,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final VitalSignRepository vitalSignRepository;
 
     // executor
-    private final Executor executor;
+    private final ExecutorService executor;
 
     // factory
     private static ViewModelFactory factory;
