@@ -18,6 +18,10 @@ public class Notifications {
     private String notification_date;
     private String notification_time;
 
+    // DEFAUL CONSTRUCT
+    public Notifications() {
+        // require a default construct
+    }
 
     // CONSTRUCT
     public Notifications(int id_patient, String notification_content, String notification_date, String notification_time) {

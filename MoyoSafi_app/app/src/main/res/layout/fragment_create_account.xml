@@ -36,6 +36,7 @@
             android:text="@string/create"
             android:textSize="50sp"
             android:textColor="@color/white"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -109,6 +110,19 @@
                 android:textColorHint="@color/gray_c"
                 android:textColor="@color/black"
                 android:background="@drawable/around_input"/>
+
+              <EditText
+                  android:id="@+id/phoneNumber"
+                  android:layout_width="300dp"
+                  android:layout_height="48dp"
+                  android:layout_marginBottom="20dp"
+                  android:layout_marginLeft="60dp"
+                  android:paddingLeft="20dp"
+                  android:inputType="number"
+                  android:hint="Numero de téléphone"
+                  android:textColorHint="@color/gray_c"
+                  android:textColor="@color/black"
+                  android:background="@drawable/around_input"/>
 
             <EditText
                 android:id="@+id/mailAddress"

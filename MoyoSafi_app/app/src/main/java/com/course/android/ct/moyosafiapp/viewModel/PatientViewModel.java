@@ -7,13 +7,15 @@ import androidx.lifecycle.ViewModel;
 import com.course.android.ct.moyosafiapp.models.Repository.NotificationsRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.PatientRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRepository;
+import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import retrofit2.Callback;
 
 public class PatientViewModel extends ViewModel {
 
@@ -51,16 +53,23 @@ public class PatientViewModel extends ViewModel {
     // --------------------------
     // 1- FOR PATIENT
     // --------------------------
-    public boolean insertPatient(Patient patient) {
-        Future<?> future  = executor.submit(()-> patientRepository.insertPatient(patient));
-        try {
-            future.get(); // future.get() bloque le thread principal jusqu'à ce que la tâche soit terminée (avec succès ou en échec).
-            return true;
-        }catch (Exception e) {
-            return false;
-        }finally {
-            executor.shutdown();
-        }
+//    code here bellow work
+//    public boolean insertPatient(Patient patient) {
+//        Future<?> future  = executor.submit(()-> patientRepository.insertPatient(patient));
+//        try {
+//            future.get(); // future.get() bloque le thread principal jusqu'à ce que la tâche soit terminée (avec succès ou en échec).
+//            return true;
+//        }catch (Exception e) {
+//            return false;
+//        }finally {
+//            executor.shutdown();
+//        }
+//    }
+
+    //*********************************************************************************************************
+    // ********************************************** for remote **********************************************
+    public void createPatient(Patient patient, Callback<CreateAccountResponse> callback) {
+        patientRepository.createPatient(patient, callback);
     }
 
     public void updatePatient(Patient patient) {

@@ -7,44 +7,47 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "patient")
 public class Patient {
-
-
     // VARIABLES (ROOM will create column for each variable)
     @PrimaryKey(autoGenerate = true)
     @NonNull
     private long id;
 
+    private int id_doctor;
+    private int id_doctor_archived;
     private String patient_name;
     private String patient_postname;
     private String patient_surname;
     private String patient_gender;
     private String patient_mail;
-    private int patient_phone_number;
+    private String patient_phone_number;
     private String patient_password;
     private String patient_picture;
     private String patient_commune;
     private String patient_quater;
     private String patient_date_created;
-
     private int patient_age;
     private long patient_size;
     private long patient_weight;
-    private String role;
+    private String patient_role;
 
+    // DEFAULT CONSTRUCT
+    public Patient() {
+        // require a default construct
+    }
 
     // CONSTRUCT
-    public Patient(String patient_name, String patient_postname, String patient_surname, String patient_gender, String patient_mail, String patient_password, String patient_date_created, int patient_age, String role) {
+    public Patient(String patient_name, String patient_postname, String patient_surname, String patient_gender, String patient_mail, String patient_phone_number , String patient_password, String patient_date_created, int patient_age, String role) {
         this.patient_name = patient_name;
         this.patient_postname = patient_postname;
         this.patient_surname = patient_surname;
         this.patient_gender = patient_gender;
         this.patient_mail = patient_mail;
+        this.patient_phone_number = patient_phone_number;
         this.patient_password = patient_password;
         this.patient_date_created = patient_date_created;
         this.patient_age = patient_age;
-        this.role = role;
+        this.patient_role = role;
     }
-
 
     // GETTERS AND SETTERS
     public long getId() {
@@ -95,11 +98,11 @@ public class Patient {
         this.patient_mail = patient_mail;
     }
 
-    public int getPatient_phone_number() {
+    public String getPatient_phone_number() {
         return patient_phone_number;
     }
 
-    public void setPatient_phone_number(int patient_phone_number) {
+    public void setPatient_phone_number(String patient_phone_number) {
         this.patient_phone_number = patient_phone_number;
     }
 
@@ -167,11 +170,27 @@ public class Patient {
         this.patient_weight = patient_weight;
     }
 
-    public String getRole() {
-        return role;
+    public String getPatient_role() {
+        return patient_role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setPatient_role(String patient_role) {
+        this.patient_role = patient_role;
+    }
+
+    public int getId_doctor() {
+        return id_doctor;
+    }
+
+    public void setId_doctor(int id_doctor) {
+        this.id_doctor = id_doctor;
+    }
+
+    public int getId_doctor_archived() {
+        return id_doctor_archived;
+    }
+
+    public void setId_doctor_archived(int id_doctor_archived) {
+        this.id_doctor_archived = id_doctor_archived;
     }
 }

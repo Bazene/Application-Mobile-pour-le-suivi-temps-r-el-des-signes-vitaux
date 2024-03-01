@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.databinding.FragmentCreateAccountBinding;
+import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
@@ -25,6 +26,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateAccountFragment extends Fragment {
     // VARIABLES
@@ -73,6 +78,7 @@ public class CreateAccountFragment extends Fragment {
         String past_name = binding.pastName.getText().toString();
         String sur_name = binding.surName.getText().toString();
         String mail_address = binding.mailAddress.getText().toString();
+        String phone_number = binding.phoneNumber.getText().toString();
         int selectedRadioButtonId = binding.radioGroupGender.getCheckedRadioButtonId();
         String age = binding.age.getText().toString();
         String user_password = binding.userPassword.getText().toString();
@@ -83,6 +89,7 @@ public class CreateAccountFragment extends Fragment {
             && !past_name.isEmpty()
             && !sur_name.isEmpty()
             && !mail_address.isEmpty()
+            && !phone_number.isEmpty()
             && selectedRadioButtonId != -1
             && !age.isEmpty()
             && !user_password.isEmpty()
@@ -101,48 +108,68 @@ public class CreateAccountFragment extends Fragment {
                     int age_user = Integer.parseInt(age);
 
                     // obtain actual date
-                    String date_created = "";
                     LocalDateTime now = null; // date and actual time variable
-                    DateTimeFormatter formatterDate = null; // date format variable
+                    DateTimeFormatter formatterDateTime = null; // dateTime format variable
+                    String date_created = "";
 
                     // role
                     String role ="user";
 
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                         now = LocalDateTime.now(); // get date and actual time
-                        formatterDate = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // format date
-                        date_created = now.format(formatterDate); // convert date in string
+                        formatterDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"); // format date
+                        date_created = now.format(formatterDateTime); // convert date in string
                     }
 
-                    Patient new_patient = new Patient(user_name, past_name, sur_name, gender, mail_address, user_password, date_created ,age_user, role);
+                    Patient new_patient = new Patient(user_name, past_name, sur_name, gender, mail_address, phone_number, user_password, date_created ,age_user, role);
 
                     // check  if the patient is already in database using his mail address
                     LiveData<List<Patient>> allPatientsInTable = getAllPatients();
-                    if(isPatientExitInTable(allPatientsInTable, mail_address)) {
-                        if(createPatient(new_patient)) {
-                            // success message
-                            Toast.makeText(requireContext(), "La création du compte a reussi avec succès", Toast.LENGTH_LONG).show();
+//                    if(isPatientExitInTable(allPatientsInTable, mail_address)) {
 
-                            // redirection to login fragment
-                            LoginFragment loginFragment = new LoginFragment(); // get login fragment
-                            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                            FragmentTransaction transaction = fragmentManager.beginTransaction();
-                            transaction.replace(R.id.authentification_frame_layout, loginFragment);
-                            transaction.addToBackStack(null);  // Ajoute la transaction à la pile de retour
-                            transaction.commit();
-                        }
-                        else{
-                            binding.errorMessage.setVisibility(View.VISIBLE);
-                            binding.errorMessage.setText("La création du compte n'a pas marché, essage de nouveau ");
-                            Toast.makeText(requireContext(), "La création du compte n'a pas marché, essage de nouveau", Toast.LENGTH_LONG).show();
-                        }
+                        //*********************************************************************************************************
+                        // ********************************************** for remote **********************************************
+                        patientViewModel.createPatient(new_patient, new Callback<CreateAccountResponse>() {
+                            @Override
+                            public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
+                                // Gérer la réponse
+                                if (response.isSuccessful()) {
+                                    // Inscription réussie
+                                    System.out.println("++++++++++++++++++++++++++ l'inscription okey +++++++++++++++++++++++++");
+                                    System.out.println("++++++++++++++++++++++++++ "+response+"  +++++++++++++++++++++++++");
+                                    // success message
+                                    Toast.makeText(requireContext(), "La création du compte a reussi avec succès", Toast.LENGTH_LONG).show();
 
-                    }
-                    else {
-                        binding.errorMessage.setVisibility(View.VISIBLE);
-                        binding.errorMessage.setText("Un compte existe déjà avec cette adresse mail : "+mail_address);
-                        Toast.makeText(requireContext(), "Un compte existe déjà avec cette adresse mail : "+mail_address, Toast.LENGTH_LONG).show();
-                    }
+                                    // redirection to login fragment
+                                    LoginFragment loginFragment = new LoginFragment(); // get login fragment
+                                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                    transaction.replace(R.id.authentification_frame_layout, loginFragment);
+                                    transaction.addToBackStack(null);  // Ajoute la transaction à la pile de retour
+                                    transaction.commit();
+
+                                } else {
+                                    // Échec de l'inscription
+                                    System.out.println("++++++++++++++++++++++++++ l'inscription faild +++++++++++++++++++++++++");
+                                    binding.errorMessage.setVisibility(View.VISIBLE);
+                                    binding.errorMessage.setText("La création du compte n'a pas marché, essage de nouveau ");
+                                    Toast.makeText(requireContext(), "La création du compte n'a pas marché, essayer de nouveau", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
+                                // Gérer l'erreur
+                                System.out.println("++++++++++++++++++++++++++"+t+"+++++++++++++++++++++++++");
+                                Toast.makeText(getActivity().getApplicationContext(), "Connectez-vous à internet", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+//                    }
+//                    else {
+//                        binding.errorMessage.setVisibility(View.VISIBLE);
+//                        binding.errorMessage.setText("Un compte existe déjà avec cette adresse mail : "+mail_address);
+//                        Toast.makeText(requireContext(), "Un compte existe déjà avec cette adresse mail : "+mail_address, Toast.LENGTH_LONG).show();
+//                    }
                 }
 
                 else {
@@ -194,12 +221,38 @@ public class CreateAccountFragment extends Fragment {
     }
 
     // function for creating the new patient
-    private boolean createPatient(Patient patient) {
-        if(this.patientViewModel.insertPatient(patient)) {
-            return true;
-        };
-        return false;
-    }
+//    private boolean createPatient(Patient patient) {
+//        if(this.patientViewModel.insertPatient(patient)) {
+//            return true;
+//        };
+//        return false;
+//    }
+
+    //***********************************
+    // ************ for remote **********
+
+
+//        patientViewModel.createPatient(patient, new Callback<CreateAccountResponse>() {
+//            @Override
+//            public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
+//                // Gérer la réponse
+//                if (response.isSuccessful()) {
+//                    // Inscription réussie
+//                    System.out.println("++++++++++++++++++++++++++ l'inscription okey +++++++++++++++++++++++++");
+//                    System.out.println("++++++++++++++++++++++++++ "+response+"  +++++++++++++++++++++++++");
+//                    System.out.println("++++++++++++++++++++++++++ "+success.get()+"  +++++++++++++++++++++++++");
+//
+//                } else {
+//                    // Échec de l'inscription
+//                    System.out.println("++++++++++++++++++++++++++ l'inscription faild +++++++++++++++++++++++++");
+//                }
+//            }
+//            @Override
+//            public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
+//                // Gérer l'erreur
+//                System.out.println("++++++++++++++++++++++++++"+t+"+++++++++++++++++++++++++");
+//            }
+//        });
 
     // function for mail check
     public static boolean isValidEmail(String email) {

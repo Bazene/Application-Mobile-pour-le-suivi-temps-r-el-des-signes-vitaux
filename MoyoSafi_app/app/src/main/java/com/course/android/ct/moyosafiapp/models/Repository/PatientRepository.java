@@ -2,20 +2,43 @@ package com.course.android.ct.moyosafiapp.models.Repository;
 
 import androidx.lifecycle.LiveData;
 
+import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
+import com.course.android.ct.moyosafiapp.models.api.PatientService;
+import com.course.android.ct.moyosafiapp.models.api.RetrofitClientInstance;
 import com.course.android.ct.moyosafiapp.models.dao.PatientDao;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class PatientRepository {
 
     // VARIABLES
     private PatientDao patientDao;
 
+    //***********************************
+    // ************ for remote **********
+    PatientService patientService;
+    Retrofit retrofit;
+
     // CONSTRUCT
     public PatientRepository(PatientDao patientDao){
 
         this.patientDao = patientDao;
+
+        //***********************************
+        // ************ for remote **********
+        this.retrofit = RetrofitClientInstance.getInstance(); // we get the instance of retrofit
+        patientService = retrofit.create(PatientService.class); // we create an instance of our service
+
 //        // 1- we get the database instance
 //        MoyoSafiDatabase moyoSafiDatabase = MoyoSafiDatabase.getInstance(application);
 //
@@ -29,9 +52,58 @@ public class PatientRepository {
     // FUNCTIONS
     // LES 5 FONCTIONS CI-DESSOUS SONT DES APIS QUE NOUS ALLONS EXPOSER A L'EXTERIEUR
     // 1- insertPatient
-    public void insertPatient(Patient patient) {
-        patientDao.insertPatient(patient);
+//    public void insertPatient(Patient patient) {
+//        patientDao.insertPatient(patient);
 //        new InsertPatientAsyncTask(patientDao).execute(patient);
+//    }
+
+    //*********************************************************************************************************
+    // ********************************************** for remote **********************************************
+    public void createPatient(Patient patient, final Callback<CreateAccountResponse> callback) {
+        Call<CreateAccountResponse> call = patientService.createPatient(patient);
+        call.enqueue(new Callback<CreateAccountResponse>() {
+            @Override
+            public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
+                if (response.isSuccessful()) {
+                        boolean success = response.body().getSuccess() ;
+                        String error = response.body().getError();
+
+                        if(success) {
+                            // on fait appel au callback onResponse du ViewModel qui est le même que celui du fragment chargé par la création du compte, et on lui passe en paramètre le resultat
+                            callback.onResponse(call, response);
+                        }
+                        else {
+                            callback.onFailure(call, new Throwable("Échec de l'enregistrement dans la base code, Error : " + error));
+                        }
+
+                } else {
+
+                    try {
+                        // La requête a échoué, tu essayes d'extraire le message d'erreur du JSON depuis le serveur
+                        String errorResponse = response.errorBody().string();
+
+                        // Vérifier si le contenu est en JSON
+                        if (errorResponse.startsWith("{")) {
+                            JSONObject jsonObject = new JSONObject(errorResponse);
+                            boolean success = jsonObject.getBoolean("success");
+                            String errorMessage = jsonObject.getString("error");
+
+                            // on fait appel au callback onFaire du ViewModel qui est le même que celui du fragment chargé par la création du compte, et on lui passe en paramètre le resultat
+                            callback.onFailure(call, new Throwable("Échec de l'inscription. Code : " + response.code() + " " + errorMessage));
+                        } else {
+                            callback.onFailure(call, new Throwable("Échec de l'inscription. Code : " + response.code() + " " + errorResponse));
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
     }
 
     // 2- updatePatient
@@ -61,67 +133,22 @@ public class PatientRepository {
     public  LiveData<Patient> getPatient(int id) {
         return patientDao.getPatient(id);
     }
-
-    // we use Executor instance of AsyncTask
-
-    // WE CREATE THE BACKGROUND THREAD BECAUSE ROOM DOESN'T WORK IN THEN MAIN THREAD
-    // 11- InsertPatientAsyncTask
-//    private static class InsertPatientAsyncTask extends AsyncTask<Patient, Void, Void> {
-//        private PatientDao patientDao;
-//
-//        private InsertPatientAsyncTask(PatientDao patientDao) {
-//            this.patientDao = patientDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Patient... patients) {
-//            patientDao.insertPatient(patients[0]);
-//            return null;
-//        }
-//    }
-//
-//    // 22- UpdatePatientAsyncTask
-//    private static class UpdatePatientAsyncTask extends AsyncTask<Patient, Void, Void> {
-//        private PatientDao patientDao;
-//
-//        private UpdatePatientAsyncTask(PatientDao patientDao) {
-//            this.patientDao = patientDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Patient... patients) {
-//            patientDao.updatePatient(patients[0]);
-//            return null;
-//        }
-//    }
-//
-//    // 33- DeletePatientAsyncTask
-//    private static class DeletePatientAsyncTask extends AsyncTask<Patient, Void, Void> {
-//        private PatientDao patientDao;
-//
-//        private DeletePatientAsyncTask(PatientDao patientDao) {
-//            this.patientDao = patientDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Patient... patients) {
-//            patientDao.deletePatient(patients[0]);
-//            return null;
-//        }
-//    }
-//
-//    // 44- DeleteAllPatientsAsyncTask
-//    private static class DeleteAllPatientsAsyncTask extends AsyncTask<Patient, Void, Void> {
-//        private PatientDao patientDao;
-//
-//        private DeleteAllPatientsAsyncTask(PatientDao patientDao) {
-//            this.patientDao = patientDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Patient... patients) {
-//            patientDao.deleteAllPatients();
-//            return null;
-//        }
-//    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
