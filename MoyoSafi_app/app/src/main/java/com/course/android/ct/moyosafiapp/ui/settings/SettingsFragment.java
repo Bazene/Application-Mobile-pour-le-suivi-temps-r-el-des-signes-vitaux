@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.course.android.ct.moyosafiapp.databinding.FragmentSettingsBinding;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
+import com.course.android.ct.moyosafiapp.ui.AuthentificationActivity;
 import com.course.android.ct.moyosafiapp.ui.BluetoothActivity;
 import com.course.android.ct.moyosafiapp.ui.ProfilActivity;
-import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.ui.authentification.LoginFragment;
 
 public class SettingsFragment extends Fragment {
 
@@ -19,27 +22,43 @@ public class SettingsFragment extends Fragment {
     private ConstraintLayout settings_to_bluetooth;
     private ConstraintLayout profile_bloc;
 
+    FragmentSettingsBinding binding;
+    private SessionManager sessionManager;
+
     // DEFAULT CONSTRUCT
     public SettingsFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sessionManager = SessionManager.getInstance(getContext());
+
+        // REDIRECT THE USER WHEN HI IS LOGGED IN
+        if (!SessionManager.getInstance(getContext()).isLoggedIn()) {
+            System.out.println("+++++++++++++++++++++++ le patient est connecté :"+sessionManager.getUser_name()+"++++++");
+            Intent intent = new Intent(getActivity().getApplicationContext(), LoginFragment.class); // we take the main activity
+            startActivity(intent); // we start it
+        }
+    }
+
     // FUNCTIONS
     // 1- first function
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Inflate the layout for this fragment
-            View view = inflater.inflate(R.layout.fragment_settings, container, false); // our view (fragment_layout)
+            binding = FragmentSettingsBinding.inflate(getLayoutInflater());
+//            View view = inflater.inflate(R.layout.fragment_settings, container, false); // our view (fragment_layout)
 
             // GET VIEWS
-            settings_to_bluetooth = view.findViewById(R.id.settings_to_bluetooth); // we take the bluetooth_bloc
-            profile_bloc = view.findViewById(R.id.profile_bloc);
+//            settings_to_bluetooth = view.findViewById(R.id.settings_to_bluetooth); // we take the bluetooth_bloc
+//            profile_bloc = view.findViewById(R.id.profile_bloc);
 
             // ACTIONS
             // 1- to settings_to_bluetooth view
 
-                settings_to_bluetooth.setOnClickListener(new View.OnClickListener() {
+                binding.settingsToBluetooth.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), BluetoothActivity.class);
@@ -48,7 +67,7 @@ public class SettingsFragment extends Fragment {
                 });
 
             // 2- to profile_bloc view
-                profile_bloc.setOnClickListener(new View.OnClickListener() {
+                binding.profileBloc.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), ProfilActivity.class);
@@ -56,6 +75,17 @@ public class SettingsFragment extends Fragment {
                     }
                 });
 
-            return view;
+            // 3- to btn-logout view (deconnexion action)
+            binding.btnLogout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SessionManager.getInstance(getContext()).isLogout();
+                    System.out.println("+++++++++++++++++++++++ le patient est deconnecté :"+sessionManager.getUser_name()+"++++++");
+                    Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
+                    startActivity(intent); // we start it
+                }
+            });
+
+            return binding.getRoot();
         }
 }

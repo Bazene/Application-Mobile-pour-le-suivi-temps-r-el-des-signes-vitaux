@@ -1,5 +1,6 @@
 package com.course.android.ct.moyosafiapp.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,28 +11,43 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
+import com.course.android.ct.moyosafiapp.ui.AuthentificationActivity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class HomeFragment extends Fragment implements VitalSignDialogFragment.VitalSignDialogListener {
+    // VARIABLES
+    SessionManager sessionManager;
+    private TextView date_in_home_screen;
+    private TextView systol_textView;
+    private TextView diastol_textView;
+    private TextView glycemie_textView;
+    private ImageView modify_imageView;
+
     // DEFAULT CONSTRUCT
       public HomeFragment() {
         // Required empty public constructor
     }
 
-    // VARIABLES
-        private TextView date_in_home_screen;
-        private TextView systol_textView;
-        private TextView diastol_textView;
-        private TextView glycemie_textView;
-        private ImageView modify_imageView;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sessionManager = SessionManager.getInstance(getContext());
+
+        // REDIRECT THE USER WHEN HI IS LOGGED IN
+        if (!SessionManager.getInstance(getContext()).isLoggedIn()) {
+            System.out.println("+++++++++++++++++++++++ le patient est connecté :"+sessionManager.getUser_name()+"++++++");
+            Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
+            startActivity(intent); // we start it
+        }
+    }
 
     // FUNCTIONS
     // 1- onCreateView function
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
             // INITIALISATION
             // 1- Inflate the layout for this fragment

@@ -1,5 +1,6 @@
 package com.course.android.ct.moyosafiapp.ui.notifications;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
+import com.course.android.ct.moyosafiapp.ui.AuthentificationActivity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +20,7 @@ public class NotificationsFragment extends Fragment {
 
     // VARIABLES
     private TextView actual_date_default_notification ;
+    private SessionManager sessionManager;
 
     // DEFAULT CONSTRUCT
     public NotificationsFragment() {
@@ -29,8 +33,15 @@ public class NotificationsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        sessionManager = SessionManager.getInstance(getContext());
 
+        // REDIRECT THE USER WHEN HI IS LOGGED IN
+        if (!SessionManager.getInstance(getContext()).isLoggedIn()) {
+            System.out.println("+++++++++++++++++++++++ le patient est connecté :"+sessionManager.getUser_name()+"++++++");
+            Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
+            startActivity(intent); // we start it
+        }
+    }
     // 2- second function
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,7 +69,6 @@ public class NotificationsFragment extends Fragment {
             }
 
             actual_date_default_notification.setText(actualDate +" | "+actualTime); //display the result
-
 
         return view;
     }

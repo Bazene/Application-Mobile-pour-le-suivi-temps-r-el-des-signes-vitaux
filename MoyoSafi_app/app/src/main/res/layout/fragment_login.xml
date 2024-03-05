@@ -56,6 +56,7 @@
             android:visibility="gone"/>
 
         <EditText
+            android:id="@+id/patient_name"
             android:layout_width="300dp"
             android:layout_height="48dp"
             android:layout_marginBottom="20dp"
@@ -66,6 +67,7 @@
             android:background="@drawable/around_input"/>
 
         <EditText
+            android:id="@+id/patient_password"
             android:layout_width="300dp"
             android:layout_height="48dp"
             android:layout_marginBottom="20dp"

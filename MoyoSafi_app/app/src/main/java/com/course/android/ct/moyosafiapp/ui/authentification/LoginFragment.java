@@ -5,20 +5,33 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.course.android.ct.moyosafiapp.ui.MainActivity;
 import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.databinding.FragmentLoginBinding;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
+import com.course.android.ct.moyosafiapp.models.api.LogPatientResponse;
+import com.course.android.ct.moyosafiapp.models.entity.Patient;
+import com.course.android.ct.moyosafiapp.ui.MainActivity;
+import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
+import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginFragment extends Fragment {
-    // FIND VIEWS
-    TextView btn_login;
-    TextView inscription_link;
-    TextView password_forgotten_link;
+    private SessionManager sessionManager;
+    FragmentLoginBinding binding; // binding will helps us to get views easily
+    PatientViewModel patientViewModel; //
 
     public LoginFragment() {
         // Required empty public constructor
@@ -28,32 +41,42 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // initialise the sessionManager
+        sessionManager = SessionManager.getInstance(getContext());
+
+        // REDIRECT THE USER WHEN HI IS LOGGED IN
+        if (SessionManager.getInstance(getContext()).isLoggedIn()) {
+            System.out.println("+++++++++++++++++++++++ le patient est connecté :"+sessionManager.getUser_name()+"++++++");
+            Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class); // we take the main activity
+            startActivity(intent); // we start it
+            getActivity().finish(); // Pour empêcher le retour à l'écran précédent avec le bouton "Retour"
+        } else {
+            System.out.println("+++++++++++++++++++++++ le patient est deconnecté :"+sessionManager.getUser_name()+"++++++");
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        binding = FragmentLoginBinding.inflate(getLayoutInflater());
 
-        // FIND VIEWS
-        btn_login = view.findViewById(R.id.btn_login);
-        inscription_link = view.findViewById(R.id.inscription_link);
-        password_forgotten_link = view.findViewById(R.id.password_forgotten_link);
+        // CONFIGURATION DEPUIS L'ACTIVITE PARENTE
+        // la difference avec la configuration parente c'est au niveau du context
+        patientViewModel = new ViewModelProvider(requireActivity(), ViewModelFactory.getInstance(requireActivity())).get(PatientViewModel.class);
 
         // LAUNCH MAIN ACTIVITY WHEN IDENTIFIES ARE CORRECT
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class); // we take the main activity
-
-                startActivity(intent); // we start it
-            }
-        });
+        binding.btnLogin.setOnClickListener(v-> logPatient());
+//        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class); // we take the main activity
+//                startActivity(intent); // we start it
+//            }
+//        });
 
         // **************************************** LAUNCH OTHER FRAGMENT WHEN SPECIFICS LINKS ARE CLICKED **************************************************
         // For inscription page
-        inscription_link.setOnClickListener(new View.OnClickListener() {
+        binding.inscriptionLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CreateAccountFragment createAccountFragment = new CreateAccountFragment();
@@ -66,7 +89,7 @@ public class LoginFragment extends Fragment {
         });
 
         // For mail page
-        password_forgotten_link.setOnClickListener(new View.OnClickListener() {
+        binding.passwordForgottenLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CheckMailAdressFragment checkMailAdressFragment = new CheckMailAdressFragment();
@@ -77,6 +100,52 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        return view;
+        return binding.getRoot();
+    }
+
+
+    public void logPatient() {
+        String patient_name = binding.patientName.getText().toString();
+        String patient_password = binding.patientPassword.getText().toString();
+
+        // ********************************************* LOGIN ONLINE *********************************************
+        patientViewModel.logPatient(patient_name, patient_password, new Callback<LogPatientResponse>() {
+            @Override
+            public void onResponse(Call<LogPatientResponse> call, Response<LogPatientResponse> response) {
+
+                if (response.isSuccessful()) {
+                    String token = response.body().getPatient_role();
+                    String user_name = response.body().getPatient_name();
+
+                    sessionManager.setUser_name(user_name);
+                    sessionManager.setAuthToken(token);
+                    System.out.println("++++++++++++++++++++++++++++ User name : "+user_name+", Token : "+sessionManager.getAuthToken()+"+++++++++++++++++++++++++++");
+                    Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class); // we take the main activity
+                    startActivity(intent); // we start it
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LogPatientResponse> call, Throwable t) {
+                String errorMessage = t.getMessage();
+                if(errorMessage.equals("Nom d'utilisateur ou mot de passe incorrect")) {
+                    binding.errorMessage.setVisibility(View.VISIBLE);
+                } else if(errorMessage.equals("Connectez-vous à l'internet")) {
+                    binding.errorMessage.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getActivity().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    // GET ALL PATIENTS FUNCTION IN LOCAL
+    private LiveData<List<Patient>> getAllPatients() {
+        return this.patientViewModel.getAllPatients();
+    }
+
+    // GET ALL PATIENTS FUNCTION ON LINE
+    private List<Patient> getAllPatinetsRemote() {
+//        return  this.patientViewModel.getPatientsOnline();
+        return null;
     }
 }

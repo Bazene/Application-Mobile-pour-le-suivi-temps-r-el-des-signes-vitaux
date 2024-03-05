@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel;
 import com.course.android.ct.moyosafiapp.models.Repository.NotificationsRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.PatientRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRepository;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
 import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
+import com.course.android.ct.moyosafiapp.models.api.LogPatientResponse;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
@@ -20,11 +22,12 @@ import retrofit2.Callback;
 public class PatientViewModel extends ViewModel {
 
     // GET REPOSITORIES
+    private SessionManager sessionManager;
     private PatientRepository patientRepository;
     private NotificationsRepository notificationsRepository;
     private VitalSignRepository vitalSignRepository;
 
-//    private Executor executor;
+//  private Executor executor;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     // DATA
@@ -33,10 +36,11 @@ public class PatientViewModel extends ViewModel {
 
     // CONSTRUCT
     public PatientViewModel(PatientRepository patientRepository, NotificationsRepository notificationsRepository, VitalSignRepository vitalSignRepository, ExecutorService executor) {
-
         this.patientRepository = patientRepository;
         this.notificationsRepository = notificationsRepository;
         this.vitalSignRepository = vitalSignRepository;
+
+        this.sessionManager = sessionManager; // for session : help to now if the user is log or not
 
         this.executor = executor; // ce ci, nous facilitera l'exécution en arrière-plan de certaines méthodes, aulieu d'utiliser les Threads
     }
@@ -50,26 +54,15 @@ public class PatientViewModel extends ViewModel {
         curentPatient = patientRepository.getPatient(id_patient);
     }
 
-    // --------------------------
-    // 1- FOR PATIENT
-    // --------------------------
-//    code here bellow work
-//    public boolean insertPatient(Patient patient) {
-//        Future<?> future  = executor.submit(()-> patientRepository.insertPatient(patient));
-//        try {
-//            future.get(); // future.get() bloque le thread principal jusqu'à ce que la tâche soit terminée (avec succès ou en échec).
-//            return true;
-//        }catch (Exception e) {
-//            return false;
-//        }finally {
-//            executor.shutdown();
-//        }
-//    }
 
     //*********************************************************************************************************
     // ********************************************** for remote **********************************************
     public void createPatient(Patient patient, Callback<CreateAccountResponse> callback) {
         patientRepository.createPatient(patient, callback);
+    }
+
+    public void logPatient(String patient_name, String patient_password, Callback<LogPatientResponse> callback) {
+        patientRepository.logPatient(patient_name, patient_password, callback);
     }
 
     public void updatePatient(Patient patient) {
@@ -84,9 +77,9 @@ public class PatientViewModel extends ViewModel {
         executor.execute(()-> patientRepository.deleteAllPatients());
     }
 
-    public LiveData<List<Patient>> getPatientsSortedByDate() {
+    public LiveData<List<Patient>> getAllPatients() {
         // here we don't use the class Executor, because LiveDate run instructions in background
-        return patientRepository.getPatientsSortedByDate();
+        return patientRepository.getAllPatients();
     }
 
     // --------------------------

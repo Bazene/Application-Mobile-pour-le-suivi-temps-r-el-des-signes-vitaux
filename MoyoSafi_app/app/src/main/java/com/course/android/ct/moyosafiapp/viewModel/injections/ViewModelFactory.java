@@ -28,14 +28,12 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     // executor
     private final ExecutorService executor;
-
     // factory
     private static ViewModelFactory factory;
 
     //----------------------------------------------------
     // CONSTRUCT
     //----------------------------------------------------
-
     public ViewModelFactory (Context context) {
         MoyoSafiDatabase moyoSafiDatabase = MoyoSafiDatabase.getInstance(context); // get instance of our database
         this.patientRepository = new PatientRepository(moyoSafiDatabase.patientDao());

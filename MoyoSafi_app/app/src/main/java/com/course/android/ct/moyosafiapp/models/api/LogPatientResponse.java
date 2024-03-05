@@ -2,7 +2,7 @@ package com.course.android.ct.moyosafiapp.models.api;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CreateAccountResponse {
+public class LogPatientResponse {
     // variable returned
     @SerializedName("patient_name")
     private String patient_name;
@@ -40,8 +40,29 @@ public class CreateAccountResponse {
     @SerializedName("error")
     private String error;
 
+    @SerializedName("id_doctor")
+    private String id_doctor ;
+
+    @SerializedName("id_doctor_archived")
+    private String id_doctor_archived ;
+
+    @SerializedName("patient_picture")
+    private String patient_picture ;
+
+    @SerializedName("patient_commune")
+    private String patient_commune ;
+
+    @SerializedName("patient_quater")
+    private String patient_quater ;
+
+    @SerializedName("patient_size")
+    private String patient_size ;
+
+    @SerializedName("patient_weight")
+    private String patient_weight;
+
     // DEFAULT CONSTRUCT
-    public CreateAccountResponse() {
+    public LogPatientResponse() {
     }
 
     // GETTERS AND SETTERS
@@ -140,5 +161,61 @@ public class CreateAccountResponse {
 
     public void setPatient_role(String patient_role) {
         this.patient_role = patient_role;
+    }
+
+    public String getId_doctor() {
+        return id_doctor;
+    }
+
+    public void setId_doctor(String id_doctor) {
+        this.id_doctor = id_doctor;
+    }
+
+    public String getId_doctor_archived() {
+        return id_doctor_archived;
+    }
+
+    public void setId_doctor_archived(String id_doctor_archived) {
+        this.id_doctor_archived = id_doctor_archived;
+    }
+
+    public String getPatient_picture() {
+        return patient_picture;
+    }
+
+    public void setPatient_picture(String patient_picture) {
+        this.patient_picture = patient_picture;
+    }
+
+    public String getPatient_commune() {
+        return patient_commune;
+    }
+
+    public void setPatient_commune(String patient_commune) {
+        this.patient_commune = patient_commune;
+    }
+
+    public String getPatient_quater() {
+        return patient_quater;
+    }
+
+    public void setPatient_quater(String patient_quater) {
+        this.patient_quater = patient_quater;
+    }
+
+    public String getPatient_size() {
+        return patient_size;
+    }
+
+    public void setPatient_size(String patient_size) {
+        this.patient_size = patient_size;
+    }
+
+    public String getPatient_weight() {
+        return patient_weight;
+    }
+
+    public void setPatient_weight(String patient_weight) {
+        this.patient_weight = patient_weight;
     }
 }
