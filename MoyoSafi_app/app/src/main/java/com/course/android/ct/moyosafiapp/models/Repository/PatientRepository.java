@@ -47,7 +47,6 @@ public class PatientRepository {
         // ********************************************** for remote **********************************************
         this.retrofit = RetrofitClientInstance.getInstance(); // we get the instance of retrofit
         patientService = retrofit.create(PatientService.class); // we create an instance of our service
-
 //        // 1- we get the database instance
 //        MoyoSafiDatabase moyoSafiDatabase = MoyoSafiDatabase.getInstance(application);
 //
@@ -67,6 +66,7 @@ public class PatientRepository {
         call.enqueue(new Callback<CreateAccountResponse>() {
             @Override
             public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
+                System.out.println("+++++++++++++++++ on entre dans onResponse ++++++++++++++++++");
                 if (response.isSuccessful()) {
                     boolean success = response.body().getSuccess() ;
                     String error = response.body().getError();
@@ -78,13 +78,13 @@ public class PatientRepository {
                     String patient_phone_number = response.body().getPatient_phone_number();
                     String patient_password = response.body().getPatient_password();
                     String patient_date_created = response.body().getPatient_date_created();
-                    String patient_age = response.body().getPatient_age();
+                    int patient_age = response.body().getPatient_age();
                     String patient_role = response.body().getPatient_role();
 
-                    int age =  patient_age != null ? Integer.parseInt(patient_age) : 0;
+//                    int age =  patient_age != null ? Integer.parseInt(patient_age) : 0;
 
-                    Patient patientResponse = new Patient(patient_name, patient_postname, patient_surname, patient_gender, patient_mail, patient_phone_number, patient_password, patient_date_created, age, patient_role);
-//                        patientResponse.setPatient_weight(0); patientResponse.setPatient_size(0); patientResponse.setId_doctor(0); patientResponse.setId_doctor_archived(0);
+                    Patient patientResponse = new Patient(patient_name, patient_postname, patient_surname, patient_gender, patient_mail, patient_phone_number, patient_password, patient_date_created, patient_age, patient_role);
+//                  patientResponse.setPatient_weight(0); patientResponse.setPatient_size(0); patientResponse.setId_doctor(0); patientResponse.setId_doctor_archived(0);
 
                     if(success) {
                         insertPatient(patientResponse);
@@ -120,6 +120,7 @@ public class PatientRepository {
 
             @Override
             public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
+                System.out.println("+++++++++++++++++++++++++++++++++++++"+t);
                 callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
             }
         });

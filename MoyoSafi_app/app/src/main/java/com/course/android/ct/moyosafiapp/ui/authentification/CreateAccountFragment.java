@@ -112,7 +112,7 @@ public class CreateAccountFragment extends Fragment {
                     String date_created = "";
 
                     // role
-                    String role = null;
+                    String role = "user";
 
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                         now = LocalDateTime.now(); // get date and actual time
@@ -123,7 +123,6 @@ public class CreateAccountFragment extends Fragment {
                     Patient new_patient = new Patient(user_name, past_name, sur_name, gender, mail_address, phone_number, user_password, date_created ,age_user, role);
 
                     // check  if the patient is already in database using his mail address
-                    LiveData<List<Patient>> allPatientsInTable = getAllPatients();
 //                    if(isPatientExitInTable(allPatientsInTable, mail_address)) {
 
                         //*********************************************************************************************************
@@ -165,9 +164,12 @@ public class CreateAccountFragment extends Fragment {
                                     Toast.makeText(requireContext(), "Echec de création du compte, essayer encore", Toast.LENGTH_LONG).show();
 
                                 } else if (errorMessage.equals("Connectez-vous à l'internet")) {
+                                    System.out.println("++++++++++++++++++++++++++++++++++++++++"+errorMessage);
                                     binding.errorMessage.setVisibility(View.VISIBLE);
                                     binding.errorMessage.setText(errorMessage);
                                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(requireContext(), ""+t, Toast.LENGTH_LONG).show();
                                 }
                             }
                         });

@@ -122,6 +122,7 @@ public class LoginFragment extends Fragment {
                     System.out.println("++++++++++++++++++++++++++++ User name : "+user_name+", Token : "+sessionManager.getAuthToken()+"+++++++++++++++++++++++++++");
                     Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class); // we take the main activity
                     startActivity(intent); // we start it
+                    getActivity().finish(); // Pour empêcher le retour à l'écran précédent avec le bouton "Retour"
                 }
             }
 

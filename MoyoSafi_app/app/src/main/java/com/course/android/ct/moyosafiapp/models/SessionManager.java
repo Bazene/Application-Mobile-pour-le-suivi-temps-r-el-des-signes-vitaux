@@ -7,8 +7,8 @@ public class SessionManager {
     private static SessionManager instance;
     private static final String PREF_NAME = "MyAppPreferences";
     private SharedPreferences sharedPreferences;
-    private String user_name;
-    private String authToken;
+    private String KEY_USER_NAME= "user_name";
+    private String KEY_AUTH_TOKEN = "authToken";
 
     // DEFAULT CONSTRUCT
     private SessionManager(Context context) {
@@ -33,21 +33,21 @@ public class SessionManager {
     // FUNCTION TO LOGOUT
     public void isLogout() {
         // Perform logout actions, e.g., clear stored session data
-        sharedPreferences.edit().remove("KEY_USER_NAME").remove("KEY_AUTH_TOKEN").apply();
+        sharedPreferences.edit().remove(KEY_USER_NAME).remove(KEY_AUTH_TOKEN).apply();
     }
 
     // GETTERS AND SETTERS
     public void setUser_name(String user_name) {
-        sharedPreferences.edit().putString("KEY_USER_NAME", user_name).apply();
+        sharedPreferences.edit().putString(KEY_USER_NAME, user_name).apply();
     }
     public void setAuthToken(String authToken) {
-        sharedPreferences.edit().putString("KEY_AUTH_TOKEN", authToken).apply();
+        sharedPreferences.edit().putString(KEY_AUTH_TOKEN, authToken).apply();
     }
 
     public String getUser_name() {
-        return sharedPreferences.getString("KEY_USER_NAME", null);
+        return sharedPreferences.getString(KEY_USER_NAME, null); // get value associated to the key, and return null if the key doesn't exist
     }
     public String getAuthToken() {
-        return sharedPreferences.getString("KEY_AUTH_TOKEN", null);
+        return sharedPreferences.getString(KEY_AUTH_TOKEN, null); // get value associated to the key, and return null if the key doesn't exist
     }
 }

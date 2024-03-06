@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 
 public interface PatientService {
 
-   @POST("Controllers/API/api_user_authentification.php")
+   @POST("Controllers/API/api_user_create_account.php")
    Call<CreateAccountResponse> createPatient(@Body Patient patient);
 
    @POST("Controllers/API/api_log_patient.php")

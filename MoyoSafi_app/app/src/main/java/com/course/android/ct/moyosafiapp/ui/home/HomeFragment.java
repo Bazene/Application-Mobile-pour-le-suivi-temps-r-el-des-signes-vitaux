@@ -27,7 +27,7 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
     private ImageView modify_imageView;
 
     // DEFAULT CONSTRUCT
-      public HomeFragment() {
+    public HomeFragment() {
         // Required empty public constructor
     }
 

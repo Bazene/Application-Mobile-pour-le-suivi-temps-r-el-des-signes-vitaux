@@ -29,7 +29,7 @@ public class CreateAccountResponse {
     private String patient_date_created;
 
     @SerializedName("patient_age")
-    private String patient_age;
+    private int patient_age;
 
     @SerializedName("patient_role")
     private String patient_role;
@@ -40,9 +40,11 @@ public class CreateAccountResponse {
     @SerializedName("error")
     private String error;
 
+
     // DEFAULT CONSTRUCT
     public CreateAccountResponse() {
     }
+
 
     // GETTERS AND SETTERS
     public Boolean getSuccess() {
@@ -126,11 +128,11 @@ public class CreateAccountResponse {
         this.patient_date_created = patient_date_created;
     }
 
-    public String getPatient_age() {
+    public int getPatient_age() {
         return patient_age;
     }
 
-    public void setPatient_age(String patient_age) {
+    public void setPatient_age(int patient_age) {
         this.patient_age = patient_age;
     }
 

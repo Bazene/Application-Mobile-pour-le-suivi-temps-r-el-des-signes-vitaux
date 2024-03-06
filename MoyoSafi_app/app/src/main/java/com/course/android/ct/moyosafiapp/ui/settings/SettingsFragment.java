@@ -40,6 +40,8 @@ public class SettingsFragment extends Fragment {
             System.out.println("+++++++++++++++++++++++ le patient est connecté :"+sessionManager.getUser_name()+"++++++");
             Intent intent = new Intent(getActivity().getApplicationContext(), LoginFragment.class); // we take the main activity
             startActivity(intent); // we start it
+//            getActivity().finish(); // Pour empêcher le retour à l'écran précédent avec le bouton "Retour"
+            getActivity().finishAffinity();
         }
     }
 
@@ -76,13 +78,14 @@ public class SettingsFragment extends Fragment {
                 });
 
             // 3- to btn-logout view (deconnexion action)
-            binding.btnLogout.setOnClickListener(new View.OnClickListener() {
+            binding.logOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     SessionManager.getInstance(getContext()).isLogout();
                     System.out.println("+++++++++++++++++++++++ le patient est deconnecté :"+sessionManager.getUser_name()+"++++++");
                     Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
-                    startActivity(intent); // we start it
+                    startActivity(intent);
+                    getActivity().finishAffinity();
                 }
             });
 
