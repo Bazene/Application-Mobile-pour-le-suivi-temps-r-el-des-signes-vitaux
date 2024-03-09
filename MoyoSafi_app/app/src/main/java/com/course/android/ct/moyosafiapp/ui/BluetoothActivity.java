@@ -19,16 +19,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
+import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
+import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
 
+import java.util.Map;
 import java.util.Set;
 
 public class BluetoothActivity extends AppCompatActivity {
 
     public static final int MESSAGE_CONNECTED = 1;
     public static final int MESSAGE_DISCONNECTED = 2;
+    private SessionManager sessionManager;
+    private PatientViewModel patientViewModel;
 
     // VARIABLES
     BluetoothAdapter myBluetoothAdapter; // variable which help us to check if the device support Bluetooth or not
@@ -64,16 +71,20 @@ public class BluetoothActivity extends AppCompatActivity {
                     listview_bluetooth_paired.setVisibility(View.GONE);
                     text_connection.setText(deviceName+" - Connected");
                     text_connection.setVisibility(View.VISIBLE);
+                    sessionManager.setConnectedToDevice(true);
                     break;
 
                 case MESSAGE_DISCONNECTED:
                     Toast.makeText(getApplicationContext(), "Error : Please connect to Device you paired with your phone", Toast.LENGTH_LONG).show();
                     text_connection.setVisibility(View.GONE);
+                    sessionManager.isDisconnected();
                     break;
             }
         }
     };
 
+
+    // DEFAULT CONSTRUCT
     public BluetoothActivity() {
         //require an empty constructor
     }
@@ -83,11 +94,17 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
+        // initialise the session
+        sessionManager = SessionManager.getInstance(this);
+
+        patientViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getApplicationContext())).get(PatientViewModel.class);
+
+        // INITIALISATION OF GLOBAL VARIABLES
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         receivedData = "";
         all_data_received = "";
-        // INITIALISATION OF GLOBAL VARIABLES
-        // views
+
+        // VIEWS
         bluetooth_to_settings = (TextView) findViewById(R.id.bluetooth_to_settings);
         text_disable_or_enable = (TextView) findViewById(R.id.text_disable_or_enable);
         switch_text_view = (TextView) findViewById(R.id.switch_text_view);
@@ -109,6 +126,26 @@ public class BluetoothActivity extends AppCompatActivity {
         on_off_bluetooth_function();
         show_paired_devices_function();
         connect_function();
+
+        // Observer le LiveData pour recevoir des mises à jour
+        patientViewModel.getBluetoothLiveData().observe(this, new Observer<Map<String, String>>() {
+            @Override
+            public void onChanged(Map<String, String> bluetoothData) {
+                // Mettez à jour votre interface utilisateur avec les données Bluetooth ici
+                updateUI(bluetoothData);
+            }
+        });
+
+    }
+
+    public void updateUI(Map<String, String> bluetoothData) {
+        // Mettez à jour votre interface utilisateur ici
+        // Par exemple, mettez à jour un TextView avec les éléments du Map
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, String> entry : bluetoothData.entrySet()) {
+            stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        text_input_stream.setText(stringBuilder.toString());
     }
 
     private void connect_function() {
@@ -125,16 +162,19 @@ public class BluetoothActivity extends AppCompatActivity {
                         // Affichez l'élément dans un Toast ou effectuez toute autre action nécessaire
                         Toast.makeText(getApplicationContext(), "Trying to connect with " + device.getName(), Toast.LENGTH_SHORT).show();
 
-                        System.out.println("*********************** Trying to connect with *****************");
+                        System.out.println("*********************** Trying to connect with "+ device.getName()+"*****************");
 
                         // *********************** CONNECTION ENTRE L'ACTIVITE ET LE SERVICE **************************
-                        Intent serviceBluetoothIntent = new Intent(BluetoothActivity.this, BluetoothService.class); // Création d'une Intent pour démarrer le service Bluetooth
-                        serviceBluetoothIntent.putExtra("SELECTED_BLUETOOTH_DEVICE", device); // Ajoutez le BluetoothDevice à l'Intent
+//                        Intent serviceBluetoothIntent = new Intent(BluetoothActivity.this, BluetoothService.class); // Création d'une Intent pour démarrer le service Bluetooth
+//                        serviceBluetoothIntent.putExtra("SELECTED_BLUETOOTH_DEVICE", device); // Envoi des données (le BluetoothDevice) au service
+//
+//                        // Enregistrez le récepteur de diffusion locale (avant de demarrer le service)
+//                        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(bluetoothReceiver, new IntentFilter("bluetooth-event"));
+//
+//                        startService(serviceBluetoothIntent); // Démarrez le service
 
-                        // Enregistrez le récepteur de diffusion locale (avant de demarrer le service)
-                        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(bluetoothReceiver, new IntentFilter("bluetooth-event"));
-
-                        startService(serviceBluetoothIntent); // Démarrez le service
+                        // Partager le ViewModel avec le Service (par exemple, via l'injection de dépendances)
+                        BluetoothServiceThread.startService(getApplicationContext(), patientViewModel, device);
                     }
                 }
             }
@@ -290,12 +330,40 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        patientViewModel.getBluetoothLiveData().removeObservers(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        patientViewModel.getBluetoothLiveData().observe(this, new Observer<Map<String, String>>() {
+            @Override
+            public void onChanged(Map<String, String> bluetoothData) {
+                // Mettez à jour votre interface utilisateur avec les données Bluetooth ici
+                if (!isFinishing()) {
+                    updateUI(bluetoothData);
+                } else {
+                    System.out.println("+++++++++++++++++ wapi +++++++++++++++++++++");
+                }
+//                text_input_stream.setText(bluetoothData);
+            }
+        });
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         // Désenregistrez le récepteur de diffusion locale lors de la destruction du service
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
 
         // On désenregistre le BroadcastReceiver lors de la destruction de l'activité
-        unregisterReceiver(bluetoothStateReceiver);
+        System.out.println("++++++++++++++++++++++++++++++++ on tu l'activité +++++++++++++++++++++++++++++");
+        // conséquance (le bluetooth va se fermer)
+//        unregisterReceiver(bluetoothStateReceiver);
+//        patientViewModel.getBluetoothLiveData().removeObservers(this);
+        patientViewModel.getBluetoothLiveData().removeObservers(this);
     }
 }

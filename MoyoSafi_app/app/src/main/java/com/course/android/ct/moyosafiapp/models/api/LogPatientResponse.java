@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class LogPatientResponse {
     // variable returned
+    @SerializedName("patient_id")
+    private int patient_id;
+
     @SerializedName("patient_name")
     private String patient_name;
 
@@ -66,6 +69,14 @@ public class LogPatientResponse {
     }
 
     // GETTERS AND SETTERS
+    public int getPatient_id() {
+        return patient_id;
+    }
+
+    public void setPatient_id(int patient_id) {
+        this.patient_id = patient_id;
+    }
+
     public Boolean getSuccess() {
         return success;
     }

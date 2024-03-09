@@ -4,6 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class CreateAccountResponse {
     // variable returned
+
+    @SerializedName("patient_id")
+    private int patient_id;
+
     @SerializedName("patient_name")
     private String patient_name;
 
@@ -47,6 +51,14 @@ public class CreateAccountResponse {
 
 
     // GETTERS AND SETTERS
+    public int getPatient_id() {
+        return patient_id;
+    }
+
+    public void setPatient_id(int patient_id) {
+        this.patient_id = patient_id;
+    }
+
     public Boolean getSuccess() {
         return success;
     }
@@ -63,7 +75,6 @@ public class CreateAccountResponse {
         this.error = error;
     }
 
-    // GETTERS AND SETTERS
     public String getPatient_name() {
         return patient_name;
     }

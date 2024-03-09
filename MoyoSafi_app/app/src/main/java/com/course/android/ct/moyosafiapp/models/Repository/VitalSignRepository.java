@@ -12,13 +12,21 @@ public class VitalSignRepository {
 
     // VARIABLES
     private VitalSignDao vitalSignDao;
+//    Retrofit retrofit;
+//    VitalSignService vitalSignService;
 
     // CONSTRUCT
     public VitalSignRepository(VitalSignDao vitalSignDao) {
         this.vitalSignDao = vitalSignDao;
+//        this.retrofit = RetrofitClientInstance.getInstance(); // we get the instance of retrofit
+//        vitalSignService = retrofit.create(VitalSignService.class);
     }
 
     // FUNCTIONS
+    public LiveData<VitalSign> getLastVitalSign() {
+        return vitalSignDao.getLastVitalSign();
+    }
+
     // 1-
     public void insertVitalSign(VitalSign vitalSign) {
         vitalSignDao.insert(vitalSign);

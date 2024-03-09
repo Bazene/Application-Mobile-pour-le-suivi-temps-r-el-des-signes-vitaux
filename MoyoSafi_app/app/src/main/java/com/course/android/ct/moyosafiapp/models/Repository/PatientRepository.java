@@ -79,12 +79,13 @@ public class PatientRepository {
                     String patient_password = response.body().getPatient_password();
                     String patient_date_created = response.body().getPatient_date_created();
                     int patient_age = response.body().getPatient_age();
+                    int patient_id = response.body().getPatient_id();
                     String patient_role = response.body().getPatient_role();
 
 //                    int age =  patient_age != null ? Integer.parseInt(patient_age) : 0;
 
                     Patient patientResponse = new Patient(patient_name, patient_postname, patient_surname, patient_gender, patient_mail, patient_phone_number, patient_password, patient_date_created, patient_age, patient_role);
-//                  patientResponse.setPatient_weight(0); patientResponse.setPatient_size(0); patientResponse.setId_doctor(0); patientResponse.setId_doctor_archived(0);
+                    patientResponse.setId(patient_id); // add the remote id to the patient object
 
                     if(success) {
                         insertPatient(patientResponse);
@@ -144,6 +145,9 @@ public class PatientRepository {
 
                     if(success) {
                         // create patient
+                        int patient_id = response.body().getPatient_id();
+
+
                         String patient_name = response.body().getPatient_name();
                         String patient_postname = response.body().getPatient_postname();
                         String patient_surname = response.body().getPatient_surname();
@@ -167,8 +171,10 @@ public class PatientRepository {
                         patientResponse.setId_doctor(idDoctor); patientResponse.setId_doctor_archived(idDoctorArchived); patientResponse.setPatient_picture(patient_picture);
                         patientResponse.setPatient_commune(patient_commune); patientResponse.setPatient_quater(patient_quater); patientResponse.setPatient_size(patientSize);
                         patientResponse.setPatient_weight(patientWeight);
+                        patientResponse.setId(patient_id);
 
-                        System.out.println("++++++++++++++++++++++++++++ Bien recu +++++++++++++++++++++++++++");
+                        System.out.println("++++++++++++++++++++++++++++ patient_id : "+patient_id+" +++++++++++++++++++++++++++");
+                        System.out.println("++++++++++++++++++++++++++++ patient_id in R : "+patientResponse.getId()+" +++++++++++++++++++++++++++");
 
                         new AsyncTask<Void, Void, Void>() {
                             @Override
@@ -244,6 +250,11 @@ public class PatientRepository {
                 return null;
             }
         }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public int getIdPatient(String token) {
+        return patientDao.getIdPatient(token);
     }
 
     // 3- deletePatient

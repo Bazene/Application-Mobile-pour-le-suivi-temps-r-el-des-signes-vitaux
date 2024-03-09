@@ -89,6 +89,15 @@ public class SettingsFragment extends Fragment {
                 }
             });
 
+            if(sessionManager.isConnected()) {
+                binding.bluetoothTextConDis.setText("connecté");
+                System.out.println("+++++++++++++++++++ VOUS ETES CONNECTER ++++++++++++++++++");
+            } else {
+                sessionManager.isDisconnected();
+                binding.bluetoothTextConDis.setText("deconnecté");
+                System.out.println("+++++++++++++++++++ VOUS ETES DECONNECTER ++++++++++++++++++");
+            }
+
             return binding.getRoot();
         }
 }

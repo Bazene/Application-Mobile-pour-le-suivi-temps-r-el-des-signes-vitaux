@@ -29,4 +29,7 @@ public interface VitalSignDao {
 
     @Query("SELECT * FROM vitalsign ORDER BY vital_date DESC, vital_hour DESC")
     LiveData<List<VitalSign>> getVitalSignsSortedByDateTime();
+
+    @Query("SELECT * FROM vitalsign ORDER BY vital_date DESC, vital_hour DESC LIMIT 1")
+    LiveData<VitalSign> getLastVitalSign();
 }

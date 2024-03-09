@@ -13,7 +13,7 @@ import com.course.android.ct.moyosafiapp.models.entity.Notifications;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
-@Database(entities = {Patient.class, VitalSign.class, Notifications.class}, version = 2, exportSchema = false)
+@Database(entities = {Patient.class, VitalSign.class, Notifications.class}, version = 4, exportSchema = false)
 public abstract class MoyoSafiDatabase extends RoomDatabase {
 
     // 1. SINGLETON OF OUR DATABASE (the reason of volatile)

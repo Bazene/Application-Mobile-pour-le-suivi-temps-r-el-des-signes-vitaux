@@ -71,6 +71,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/hzRealTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -109,6 +110,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/spo2RealTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -147,6 +149,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tempRealTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="37°C"
@@ -232,6 +235,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/data_received"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "patient")
 public class Patient {
     // VARIABLES (ROOM will create column for each variable)
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     @NonNull
     private long id;
 

@@ -1,10 +1,11 @@
 package com.course.android.ct.moyosafiapp.models.entity;
 
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "vitalsign")
-public class VitalSign {
+@Entity(tableName = "vitalSignRealTime")
+public class VitalSignRealTime {
 
     // VARIABLES
     @PrimaryKey(autoGenerate = true)
@@ -18,9 +19,10 @@ public class VitalSign {
     private int diastolic_blood;
     private String vital_hour;
     private String vital_date;
+    private int nbr;
 
     // CONSTRUCT
-    public VitalSign(int id_patient, float temperature, int heart_rate, int oxygen_level, int blood_glucose, int systolic_blood, int diastolic_blood, String vital_hour, String vital_date) {
+    public VitalSignRealTime(int id_patient, float temperature, int heart_rate, int oxygen_level, int blood_glucose, int systolic_blood, int diastolic_blood, String vital_hour, String vital_date) {
         this.id_patient = id_patient;
         this.temperature = temperature;
         this.heart_rate = heart_rate;
@@ -114,3 +116,4 @@ public class VitalSign {
         this.vital_date = vital_date;
     }
 }
+

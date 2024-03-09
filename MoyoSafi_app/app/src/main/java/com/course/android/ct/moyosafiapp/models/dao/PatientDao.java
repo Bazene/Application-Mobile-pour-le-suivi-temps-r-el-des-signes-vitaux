@@ -37,4 +37,7 @@ public interface PatientDao {
 
     @Query("SELECT * FROM patient")
     LiveData<List<Patient>> getAllPatients();
+
+    @Query("SELECT id FROM patient WHERE patient_role = :patient_role")
+    int getIdPatient(String patient_role);
 }
