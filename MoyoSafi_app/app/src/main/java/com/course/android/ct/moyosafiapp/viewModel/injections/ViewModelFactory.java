@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.course.android.ct.moyosafiapp.models.MoyoSafiDatabase;
 import com.course.android.ct.moyosafiapp.models.Repository.NotificationsRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.PatientRepository;
+import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRealTimeRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRepository;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 
@@ -25,6 +26,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final PatientRepository patientRepository;
     private final NotificationsRepository notificationsRepository;
     private final VitalSignRepository vitalSignRepository;
+    private final VitalSignRealTimeRepository vitalSignRealTimeRepository;
 
     // executor
     private final ExecutorService executor;
@@ -39,6 +41,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.patientRepository = new PatientRepository(moyoSafiDatabase.patientDao());
         this.notificationsRepository = new NotificationsRepository(moyoSafiDatabase.notificationsDao());
         this.vitalSignRepository = new VitalSignRepository(moyoSafiDatabase.vitalSignDao());
+        this.vitalSignRealTimeRepository = new VitalSignRealTimeRepository(moyoSafiDatabase.vitalSignRealTimeDao());
         this.executor = Executors.newSingleThreadExecutor();
     }
 
@@ -63,7 +66,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NotNull
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if(modelClass.isAssignableFrom(PatientViewModel.class)) {
-            return (T) new PatientViewModel(patientRepository, notificationsRepository, vitalSignRepository,executor);
+            return (T) new PatientViewModel(patientRepository, notificationsRepository, vitalSignRepository, vitalSignRealTimeRepository,executor);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

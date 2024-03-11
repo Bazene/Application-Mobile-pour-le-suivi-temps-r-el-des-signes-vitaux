@@ -1,5 +1,8 @@
 package com.course.android.ct.moyosafiapp.viewModel;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -7,12 +10,14 @@ import androidx.lifecycle.ViewModel;
 
 import com.course.android.ct.moyosafiapp.models.Repository.NotificationsRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.PatientRepository;
+import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRealTimeRepository;
 import com.course.android.ct.moyosafiapp.models.Repository.VitalSignRepository;
 import com.course.android.ct.moyosafiapp.models.SessionManager;
 import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
 import com.course.android.ct.moyosafiapp.models.api.LogPatientResponse;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
+import com.course.android.ct.moyosafiapp.models.entity.VitalSignRealTime;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,6 +26,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Callback;
 
 public class PatientViewModel extends ViewModel {
@@ -30,6 +37,10 @@ public class PatientViewModel extends ViewModel {
     private PatientRepository patientRepository;
     private NotificationsRepository notificationsRepository;
     private VitalSignRepository vitalSignRepository;
+    private VitalSignRealTimeRepository vitalSignRealTimeRepository;
+
+    private int nbrIteration = 1;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     // private Executor executor;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -41,19 +52,22 @@ public class PatientViewModel extends ViewModel {
     private LiveData<Patient> curentPatient;
 
     // CONSTRUCT
-    public PatientViewModel(PatientRepository patientRepository, NotificationsRepository notificationsRepository, VitalSignRepository vitalSignRepository, ExecutorService executor) {
+    public PatientViewModel(PatientRepository patientRepository, NotificationsRepository notificationsRepository, VitalSignRepository vitalSignRepository, VitalSignRealTimeRepository vitalSignRealTimeRepository, ExecutorService executor) {
         this.patientRepository = patientRepository;
         this.notificationsRepository = notificationsRepository;
         this.vitalSignRepository = vitalSignRepository;
+        this.vitalSignRealTimeRepository = vitalSignRealTimeRepository;
         this.executor = executor; // ce ci, nous facilitera l'exécution en arrière-plan de certaines méthodes, aulieu d'utiliser les Threads
+
+        observeChanges(); // pour démarrer l'observation des changements dès que le ViewModel est créé.
     }
 
     // FUNCTIONS
 
 
-    // ----------------------------
+    // -----------------------------------------------------------------------------------------------------------
     // 1- FOR PATIENT
-    // ----------------------------
+    // -----------------------------------------------------------------------------------------------------------
     // for initialisation
     public void init(int id_patient) {
         if(this.curentPatient != null) {
@@ -95,102 +109,75 @@ public class PatientViewModel extends ViewModel {
 
 
 
-
-    // --------------------------
-    // 2- FOR VITAL SIGN
-    // --------------------------
-
-//    public void insertBluetoothData(Map<String, String> mapResult) {
-//        new AsyncTask<Void, Void, Void>() {
-//            @Override
-//            protected Void doInBackground(Void... voids) {
-//                try {
-//                    System.out.println("+++++++++++++++++++++++++++ la méthode a été appelé");
-//                // other vital sign
-//                Float temperature = Float.valueOf(mapResult.get("Temp"));
-//                int heart_rate = Integer.parseInt(mapResult.get("Hz"));
-//                int oxygen_level = Integer.parseInt(mapResult.get("Spo2"));
-//
-//                // we get the token
-//                String token = sessionManager.getAuthToken();
-//
-//                // we get id of patient
-//                int id = getIdPatient(token);
-//
-//                // we get the last objet in VitalSign table
-//                VitalSign lastVitalSign = vitalSignRepository.getLastVitalSign();
-//
-//                // Actual date and hour
-//                LocalDateTime now = LocalDateTime.now();
-//                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Formater la date
-//                DateTimeFormatter formatterHeure = DateTimeFormatter.ofPattern("HH:mm:ss"); // Formater l'heur
-//                String actuelDate = now.format(formatterDate);
-//                String actuelHour = now.format(formatterHeure);
-//
-//
-//                if (lastVitalSign != null) {
-//                    // we get other vial sign
-//                    int blood_glucose = lastVitalSign.getBlood_glucose();
-//                    int systolic_blood = lastVitalSign.getSystolic_blood();
-//                    int diastolic_blood = lastVitalSign.getDiastolic_blood();
-//
-//                    // insert the vital sign in data base
-//                    VitalSign vitalSign = new VitalSign(id, temperature, heart_rate, oxygen_level, blood_glucose, systolic_blood, diastolic_blood, actuelDate, actuelHour);
-//                    vitalSignRepository.insertVitalSign(vitalSign);
-//
-//                } else {
-//                    int blood_glucose = 0;
-//                    int systolic_blood = 0;
-//                    int diastolic_blood = 0;
-//
-//                    // insert the vital sign in data base
-//                    VitalSign vitalSign = new VitalSign(id, temperature, heart_rate, oxygen_level, blood_glucose, systolic_blood, diastolic_blood, actuelDate, actuelHour);
-//                    vitalSignRepository.insertVitalSign(vitalSign);
-//                }
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Log.e("Error", "An error occurred: " + e.getMessage());
-//            }
-//
-//                return null;
-//            }
-//        }.execute();
-//    }
+    // -----------------------------------------------------------------------------------------------------------
+    // 2- FOR VITAL SIGN REAL TIME
+    // -----------------------------------------------------------------------------------------------------------
 
     // Méthode pour observer les données ici Bluetooth
     public LiveData<Map<String, String>> getBluetoothLiveData() {
         return bluetoothLiveData;
     }
 
-    // Méthode pour mettre à jour les données dans le ViewModel
+    // METHODE THAT HELP TO INSERT DATA IN REALTIME DATABASE
+    @SuppressLint("StaticFieldLeak")
     public void updateBluetoothData(Map<String, String>  mapResult) {
         bluetoothLiveData.postValue(mapResult);
 
-        // Vous pouvez ajouter ici la logique de traitement ou d'enregistrement dans la base Room
-        // Actual date and hour
+        // INSERTING DATA INTO ROOM DATA BASE
+        // Get actual date and hour
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Formater la date
         DateTimeFormatter formatterHeure = DateTimeFormatter.ofPattern("HH:mm:ss"); // Formater l'heur
         String actuelDate = now.format(formatterDate);
         String actuelHour = now.format(formatterHeure);
 
-        try {
-            int id = Integer.parseInt(mapResult.get("idPatient")); // we get id of patient
-            Float temperature = Float.valueOf(mapResult.get("Temp"));
-            int heart_rate = Integer.parseInt(mapResult.get("Hz"));
-            int oxygen_level = Integer.parseInt(mapResult.get("Spo2"));
-
-            VitalSign vitalSign = new VitalSign(id, temperature, heart_rate, oxygen_level, 2, 3, 4, actuelDate, actuelHour);
-            executor.execute(()-> vitalSignRepository.insertVitalSign(vitalSign));
-
-        } catch (NumberFormatException e) {
-            // Gérez l'exception en cas d'échec de la conversion
-            e.printStackTrace();
-        }
+        int id = Integer.parseInt(mapResult.get("idPatient")); // we get id of patient
+        Float temperature = Float.valueOf(mapResult.get("Temp"));
+        int heart_rate = Integer.parseInt(mapResult.get("Hz"));
+        int oxygen_level = Integer.parseInt(mapResult.get("Spo2"));
 
         System.out.println("++++++++++++++++++++++++++++++++++++ Temp : "+mapResult.get("Temp")+"; Hz : "+mapResult.get("Hz")+" Spo2 :"+mapResult.get("Spo2")+" idPatient : "+mapResult.get("idPatient")+"++++++++++++++++++++++++++++++++++++");
+
+        VitalSignRealTime vitalSignRealTime = new VitalSignRealTime(id, temperature, heart_rate, oxygen_level, actuelDate, actuelHour, nbrIteration);
+        nbrIteration +=1; // incremente the iteration number
+
+        executor.execute(()->vitalSignRealTimeRepository.insertVitalSignRealTime(vitalSignRealTime));
     }
+
+    // REAL TIME
+    public LiveData<VitalSignRealTime> getVitalSignRealTimeForUi() {
+        return vitalSignRealTimeRepository.getVitalSignRealTimeForUi();
+    }
+
+
+
+    // -----------------------------------------------------------------------------------------------------------
+    // 3- FOR VITAL SIGN
+    // -----------------------------------------------------------------------------------------------------------
+
+    // FOR MOYENNE CALCUL
+
+
+//    if(vitalSignRealSign.getNbrIteration() == 1) {
+//        // calcul de Mo (moyenne initiale)
+//    } else {
+//        // calcul de Mi, autre que Mo, i.e. i != o
+//    }
+
+    // Observer ajouté au flux RxJava
+    private void observeChanges() {
+        compositeDisposable.add(
+        vitalSignRealTimeRepository.observeChanges()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(newVitalRealTime -> {
+                    // Réagir aux changements dans le ViewModel
+
+                    Log.d("YourViewModel", "++++++++++++++++++++++ Changement détecté dans la base de données.+++++++++++++++++++++++++++++++=");
+                })
+        );
+    }
+
 
     public LiveData<VitalSign> getLastVitalSign() {
         return vitalSignRepository.getLastVitalSign();
@@ -220,8 +207,14 @@ public class PatientViewModel extends ViewModel {
         return  vitalSignRepository.getVitalSignsSortedByDateTime();
     }
 
-    // --------------------------
-    // 3- FOR NOTIFICATIONS
-    // --------------------------
 
+
+    // -----------------------------------------------------------------------------------------------------------
+    // 4- FOR NOTIFICATIONS
+    // -----------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected void onCleared() {
+        compositeDisposable.clear();
+    }
 }

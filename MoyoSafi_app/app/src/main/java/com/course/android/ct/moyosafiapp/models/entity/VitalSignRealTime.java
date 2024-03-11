@@ -10,30 +10,25 @@ public class VitalSignRealTime {
     // VARIABLES
     @PrimaryKey(autoGenerate = true)
     private int id;
+
     private int id_patient;
     private float temperature;
     private int heart_rate;
     private int oxygen_level;
-    private int blood_glucose;
-    private int systolic_blood;
-    private int diastolic_blood;
     private String vital_hour;
     private String vital_date;
-    private int nbr;
+    private int nbrIteration;
 
     // CONSTRUCT
-    public VitalSignRealTime(int id_patient, float temperature, int heart_rate, int oxygen_level, int blood_glucose, int systolic_blood, int diastolic_blood, String vital_hour, String vital_date) {
+    public VitalSignRealTime(int id_patient, float temperature, int heart_rate, int oxygen_level, String vital_hour, String vital_date, int nbrIteration) {
         this.id_patient = id_patient;
         this.temperature = temperature;
         this.heart_rate = heart_rate;
         this.oxygen_level = oxygen_level;
-        this.blood_glucose = blood_glucose;
-        this.systolic_blood = systolic_blood;
-        this.diastolic_blood = diastolic_blood;
         this.vital_hour = vital_hour;
         this.vital_date = vital_date;
+        this.nbrIteration = nbrIteration;
     }
-
 
     // GETTERS AND SETTERS
     public int getId() {
@@ -76,30 +71,6 @@ public class VitalSignRealTime {
         this.oxygen_level = oxygen_level;
     }
 
-    public int getBlood_glucose() {
-        return blood_glucose;
-    }
-
-    public void setBlood_glucose(int blood_glucose) {
-        this.blood_glucose = blood_glucose;
-    }
-
-    public int getSystolic_blood() {
-        return systolic_blood;
-    }
-
-    public void setSystolic_blood(int systolic_blood) {
-        this.systolic_blood = systolic_blood;
-    }
-
-    public int getDiastolic_blood() {
-        return diastolic_blood;
-    }
-
-    public void setDiastolic_blood(int diastolic_blood) {
-        this.diastolic_blood = diastolic_blood;
-    }
-
     public String getVital_hour() {
         return vital_hour;
     }
@@ -114,6 +85,14 @@ public class VitalSignRealTime {
 
     public void setVital_date(String vital_date) {
         this.vital_date = vital_date;
+    }
+
+    public int getNbrIteration() {
+        return nbrIteration;
+    }
+
+    public void setNbrIteration(int nbrIteration) {
+        this.nbrIteration = nbrIteration;
     }
 }
 

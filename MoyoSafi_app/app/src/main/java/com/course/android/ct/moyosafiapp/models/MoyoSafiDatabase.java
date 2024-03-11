@@ -9,11 +9,13 @@ import androidx.room.RoomDatabase;
 import com.course.android.ct.moyosafiapp.models.dao.NotificationsDao;
 import com.course.android.ct.moyosafiapp.models.dao.PatientDao;
 import com.course.android.ct.moyosafiapp.models.dao.VitalSignDao;
+import com.course.android.ct.moyosafiapp.models.dao.VitalSignRealTimeDao;
 import com.course.android.ct.moyosafiapp.models.entity.Notifications;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
+import com.course.android.ct.moyosafiapp.models.entity.VitalSignRealTime;
 
-@Database(entities = {Patient.class, VitalSign.class, Notifications.class}, version = 4, exportSchema = false)
+@Database(entities = {Patient.class, VitalSign.class, VitalSignRealTime.class, Notifications.class}, version = 5, exportSchema = false)
 public abstract class MoyoSafiDatabase extends RoomDatabase {
 
     // 1. SINGLETON OF OUR DATABASE (the reason of volatile)
@@ -23,6 +25,7 @@ public abstract class MoyoSafiDatabase extends RoomDatabase {
     public abstract PatientDao patientDao();
     public abstract NotificationsDao notificationsDao();
     public abstract VitalSignDao vitalSignDao();
+    public abstract VitalSignRealTimeDao vitalSignRealTimeDao();
 
     // 3. INSTANCE DATA BASE FOR MOYOSAFI APP (MoyoSafiDatabase IS THE RETURNED TYPE, WISH WILL BE CREATED ONCE)
     public static MoyoSafiDatabase getInstance(Context context) {

@@ -65,4 +65,8 @@ dependencies {
 
     // FOR JBCRYPT LIBRARY
     implementation 'org.mindrot:jbcrypt:0.4'
+
+    // FOR RX JAVA
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+    implementation 'androidx.room:room-rxjava3:2.6.1'
 }

@@ -147,7 +147,6 @@ public class PatientRepository {
                         // create patient
                         int patient_id = response.body().getPatient_id();
 
-
                         String patient_name = response.body().getPatient_name();
                         String patient_postname = response.body().getPatient_postname();
                         String patient_surname = response.body().getPatient_surname();

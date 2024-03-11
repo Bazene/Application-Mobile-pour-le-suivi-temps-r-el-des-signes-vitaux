@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.models.SessionManager;
-import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
+import com.course.android.ct.moyosafiapp.models.entity.VitalSignRealTime;
 import com.course.android.ct.moyosafiapp.ui.AuthentificationActivity;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
@@ -108,14 +108,14 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
             });
 
             // OBSERVER LE VIEW MODEL FOURNISSANT LES DONNEES POUR LES MISES A JOURS DANS LE FRAGMENT
-            //observer le live data ici du ViewModel
-
-            patientViewModel.getLastVitalSign().observe(getActivity(), new Observer<VitalSign>() {
+            patientViewModel.getVitalSignRealTimeForUi().observe(getActivity(), new Observer<VitalSignRealTime>() {
                 @Override
-                public void onChanged(VitalSign vitalSign) {
-                    hzRealTime.setText(""+vitalSign.getHeart_rate()+" BPM");
-                    spo2RealTime.setText(""+vitalSign.getOxygen_level()+" %");
-                    tempRealTime.setText(""+vitalSign.getTemperature()+ " °C");
+                public void onChanged(VitalSignRealTime vitalSignRealTime) {
+                    if(vitalSignRealTime != null) {
+                        hzRealTime.setText("" + vitalSignRealTime.getHeart_rate() + " BPM");
+                        spo2RealTime.setText("" + vitalSignRealTime.getOxygen_level() + " %");
+                        tempRealTime.setText("" + vitalSignRealTime.getTemperature() + " °C");
+                    }
                 }
             });
 
@@ -123,7 +123,7 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
         }
 
     // 2- Display dialog function
-        private void openDialog() {
+    private void openDialog() {
             System.out.println("++++++++++++++++++++++++++ le dialogue est apple ++++++++++++++++++++++++++");
             VitalSignDialogFragment dialogFragment = new VitalSignDialogFragment(); // Instantiation of the dialog fragment
             dialogFragment.setListener(HomeFragment.this); // écouteur (listener) pour le DialogFragment
@@ -131,8 +131,8 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
         }
 
     // 3- we get the change in our fragment
-        @Override
-        public void setTextOnMainView(String new_systol_value,String new_diastol_value, String new_glycemie_vital) {
+    @Override
+    public void setTextOnMainView(String new_systol_value,String new_diastol_value, String new_glycemie_vital) {
             // Mettez à jour les TextView avec les nouvelles valeurs ici
             systol_textView.setText(new_systol_value);
             diastol_textView.setText(new_diastol_value);

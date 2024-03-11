@@ -125,6 +125,7 @@ public class BluetoothServiceThread extends Service {
                 System.out.println("++++++++ bluetooth Connect okay ++++++++++++");
 
                 if (bluetoothSocket.isConnected()) {
+
                     // Obtenez le nom du périphérique connecté
                     String connectedDeviceName = bluetoothSocket.getRemoteDevice().getName();
 
@@ -151,7 +152,7 @@ public class BluetoothServiceThread extends Service {
                     byte[] buffer = new byte[1024]; // création d'un tampon pour stocker les données lues
                     int bytesRead; // variable qui va contenir la donnée lue depuis le flux d'entrée dans le buffer
 
-                    // variables that help us to complete the listResult
+                    // variables that help us to complete the mapResult (permet de se rassurer qu'il y a les trois valeurs dans le map)
                     int i = 0;
                     int j = 2;
 
@@ -165,26 +166,43 @@ public class BluetoothServiceThread extends Service {
                         if (receivedData.contains("\n")) {
                             maChaine = all_data_received.trim();
 
-                            List<String> data = Arrays.asList(maChaine.split(":"));
-                            System.out.println("+++++++++++++++++++++++++++ Les donnees sont encours de reception +++++++++++++++++++++++++++++++++");
-                            System.out.println("++++++++++++++++++++++++++++++" + data + "+++++++++++++++++++++++++++++++++++++");
+                            if (maChaine.contains(":")) { // FILTER LEVEL 1 (CHECK IF DATA HAS TOW PARTS)
+                                List<String> data = Arrays.asList(maChaine.split(":"));
 
-                            if(i<j) {
-                                mapResult.put(data.get(0), data.get(1));
-                                i = i+1;
-                            } else {
-                                mapResult.put(data.get(0), data.get(1));
-                                // send data to the repository
 
-//                              patientViewModel.insertBluetoothData(mapResult);
-                                publishProgress(mapResult); // send map to onProgressUpdate();
-                                System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result: "+mapResult+"+++++++++++++++++++++++++++++++++++++++++++");
-                                i = 0;
-                            }
+                                if(i<j) {
+                                    mapResult.put(data.get(0), data.get(1));
+                                    i += 1;
+                                } else  {
+                                    mapResult.put(data.get(0), data.get(1));
 
-                            // ********************** PARTAGE DES DONNEES RECU ICI **********************
-//                            publishProgress(String.valueOf(data));
-//                            patientViewModel.updateBluetoothData(data);
+                                    // ********************** PARTAGE DES DONNEES RECU **********************
+
+                                    // FILTER LEVEL 2 (CHECK IF DATA ARE GETTED)
+                                    if(!(mapResult.get("Temp")).equals("0") && !(mapResult.get("Hz")).equals("0") && !(mapResult.get("Spo2")).equals("0")) {
+
+                                        // FILTER LEVEL 3 (CHECK IF DATA CAN BE CONVERTED TO FLOAT AND INT)
+                                        try {
+                                            Float temperature = Float.valueOf(mapResult.get("Temp"));
+                                            int heart_rate = Integer.parseInt(mapResult.get("Hz"));
+                                            int oxygen_level = Integer.parseInt(mapResult.get("Spo2"));
+
+                                            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result: " + mapResult + "+++++++++++++++++++++++++++++++++++++++++++");
+                                            publishProgress(mapResult); // send map to onProgressUpdate();
+                                        } catch (NumberFormatException e) {
+                                            // Gérez l'exception en cas d'échec de la conversion
+                                            System.out.println("++++++++++++++++++++++++++++++++++++ la conversion des données en nombre a échouer ++++++++++++++++++++++++++++++++++++");
+                                            e.printStackTrace();
+                                        }
+
+                                    } else {
+                                        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result n'est pas complet +++++++++++++++++++++++++++++++++++++++++++");
+                                    }
+
+                                    i = 0;
+                                }
+                            } else System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ les données ne sont pas bien reçu, manque de : dans la chaine +++++++++++++++++++++++++++++++++++++++++++");
+
                             all_data_received = "";
                         }
                     }

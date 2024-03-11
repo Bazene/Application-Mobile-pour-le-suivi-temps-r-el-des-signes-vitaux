@@ -75,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="76BPM"
+                android:text="0 BPM"
                 android:textStyle="bold"
                 android:textColor="@color/white"/>
 
@@ -114,7 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="96%"
+                android:text="0%"
                 android:textStyle="bold"
                 android:textColor="@color/white"/>
 
@@ -152,7 +152,7 @@
                 android:id="@+id/tempRealTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="37°C"
+                android:text="0°C"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textColor="@color/white"/>
