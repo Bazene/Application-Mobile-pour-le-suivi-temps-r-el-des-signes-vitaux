@@ -10,7 +10,7 @@ public class Patient {
     // VARIABLES (ROOM will create column for each variable)
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    private long id;
+    private int id;
 
     private int id_doctor;
     private int id_doctor_archived;
@@ -21,7 +21,7 @@ public class Patient {
     private String patient_mail;
     private String patient_phone_number;
     private String patient_password;
-    private String patient_picture;
+    private byte[] patient_picture;
     private String patient_commune;
     private String patient_quater;
     private String patient_date_created;
@@ -50,11 +50,11 @@ public class Patient {
     }
 
     // GETTERS AND SETTERS
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -114,11 +114,11 @@ public class Patient {
         this.patient_password = patient_password;
     }
 
-    public String getPatient_picture() {
+    public byte[] getPatient_picture() {
         return patient_picture;
     }
 
-    public void setPatient_picture(String patient_picture) {
+    public void setPatient_picture(byte[] patient_picture) {
         this.patient_picture = patient_picture;
     }
 

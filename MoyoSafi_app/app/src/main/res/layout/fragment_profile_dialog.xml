@@ -82,6 +82,30 @@
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"/>
 
+    <EditText
+        android:id="@+id/new_weight"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="text"
+        android:hint="Poids"
+        android:textColorHint="@color/gray_c"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <EditText
+        android:id="@+id/new_size"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="text"
+        android:hint="Taille"
+        android:textColorHint="@color/gray_c"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
     <RadioGroup
         android:id="@+id/new_radio_group_gender"
         android:layout_width="match_parent"

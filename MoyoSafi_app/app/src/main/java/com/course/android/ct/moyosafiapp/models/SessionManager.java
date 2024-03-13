@@ -35,7 +35,6 @@ public class SessionManager {
         sharedPreferences.edit().remove(KEY_USER_NAME).remove(KEY_AUTH_TOKEN).apply();
     }
 
-
     // FUNCTIONS THAT HELP TO CHECK IF OUR DEVICE IS CONNECTED OR NOT TO HC-05
 
     public boolean isConnected() {

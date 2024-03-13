@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.models.SessionManager;
+import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSignRealTime;
 import com.course.android.ct.moyosafiapp.ui.AuthentificationActivity;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
@@ -28,14 +30,16 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
     // VARIABLES
     SessionManager sessionManager;
     private TextView date_in_home_screen;
-    private TextView systol_textView;
-    private TextView diastol_textView;
+    private TextView systolic_value;
+    private TextView diastolic_value ;
     private TextView glycemie_textView;
     private ImageView modify_imageView;
-    private TextView data_received;
+    private TextView heart_rate_value;
     private TextView hzRealTime;
     private TextView spo2RealTime;
+    private TextView temp_value;
     private TextView tempRealTime;
+    private TextView spo2_vlaue;
     private Context context;
 
     private PatientViewModel patientViewModel; //
@@ -74,14 +78,18 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
             // 2-  Views
             date_in_home_screen = view.findViewById(R.id.date_in_home_screen);
 
-            systol_textView = view.findViewById(R.id.systol_textView);
-            diastol_textView = view.findViewById(R.id.diastol_textView);
+            systolic_value = view.findViewById(R.id.systolic_value);
+            diastolic_value = view.findViewById(R.id.diastolic_value);
             glycemie_textView = view.findViewById(R.id.glycemie_textView);
             modify_imageView = view.findViewById(R.id.modify_imageView);
-            data_received = view.findViewById(R.id.data_received);
+            heart_rate_value = view.findViewById(R.id.heart_rate_value);
+            spo2_vlaue = view.findViewById(R.id.spo2_vlaue);
+            temp_value = view.findViewById(R.id.temp_value);
             hzRealTime = view.findViewById(R.id.hzRealTime);
             spo2RealTime = view.findViewById(R.id.spo2RealTime);
             tempRealTime = view.findViewById(R.id.tempRealTime);
+
+
 
             // ACTIONS
             // 1- to date_in_home_screen view
@@ -119,25 +127,53 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
                 }
             });
 
+
+            patientViewModel.getLastVitalSignForUi().observe(getActivity(), new Observer<VitalSign>() {
+                @Override
+                public void onChanged(VitalSign vitalSign) {
+                    if(vitalSign != null) {
+                        heart_rate_value.setText(""+vitalSign.getHeart_rate());
+                        spo2_vlaue.setText(""+vitalSign.getOxygen_level());
+                        temp_value.setText(""+String.format("%.1f", vitalSign.getTemperature()));
+                        systolic_value.setText(""+vitalSign.getSystolic_blood());
+                        diastolic_value.setText(""+vitalSign.getDiastolic_blood());
+                        glycemie_textView.setText(""+vitalSign.getBlood_glucose());
+                    }
+                }
+            });
+
             return view;
         }
 
     // 2- Display dialog function
     private void openDialog() {
-            System.out.println("++++++++++++++++++++++++++ le dialogue est apple ++++++++++++++++++++++++++");
-            VitalSignDialogFragment dialogFragment = new VitalSignDialogFragment(); // Instantiation of the dialog fragment
-            dialogFragment.setListener(HomeFragment.this); // écouteur (listener) pour le DialogFragment
-            dialogFragment.show(getChildFragmentManager(), "VitalSignDialogFragment"); // obtenir le gestionnaire de fragments spécifique à ce fragment et affichage du dialog
-        }
+        System.out.println("++++++++++++++++++++++++++ le dialogue est apple ++++++++++++++++++++++++++");
+        VitalSignDialogFragment dialogFragment = new VitalSignDialogFragment(); // Instantiation of the dialog fragment
+        dialogFragment.setListener(HomeFragment.this); // écouteur (listener) pour le DialogFragment
+        dialogFragment.show(getChildFragmentManager(), "VitalSignDialogFragment"); // obtenir le gestionnaire de fragments spécifique à ce fragment et affichage du dialog
+    }
 
     // 3- we get the change in our fragment
     @Override
-    public void setTextOnMainView(String new_systol_value,String new_diastol_value, String new_glycemie_vital) {
-            // Mettez à jour les TextView avec les nouvelles valeurs ici
-            systol_textView.setText(new_systol_value);
-            diastol_textView.setText(new_diastol_value);
-            glycemie_textView.setText(new_glycemie_vital);
+    public void setTextOnMainView(String new_systol_value,String new_diastol_value, String new_glycemie_vital, Boolean nonVitalSignInRealtime) {
+        try {
+            if(nonVitalSignInRealtime) {
+                // Mettez à jour les TextView avec les nouvelles valeurs ici
+                int newSystolValue = (new_systol_value != null) ? Integer.parseInt(new_systol_value) : 0;
+                int newDiastolValue = (new_diastol_value != null) ? Integer.parseInt(new_diastol_value) : 0;
+                int newGlycemieValue = (new_glycemie_vital != null) ? Integer.parseInt(new_glycemie_vital) : 0;
+
+                Context context1 = getContext();
+
+                patientViewModel.insertOtherVitalSign(context1, newSystolValue, newDiastolValue, newGlycemieValue);
+            } else {
+                Toast.makeText(getContext(), "Aucune donnée enregistrer, connectez votre braclet avant d'entrer vos valeurs", Toast.LENGTH_LONG).show();
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Veillez remplire tout les champs", Toast.LENGTH_LONG).show();
         }
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {

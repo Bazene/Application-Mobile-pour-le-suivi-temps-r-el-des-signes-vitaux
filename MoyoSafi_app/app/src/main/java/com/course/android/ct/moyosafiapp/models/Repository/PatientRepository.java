@@ -2,6 +2,7 @@ package com.course.android.ct.moyosafiapp.models.Repository;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
+import android.util.Base64;
 
 import androidx.lifecycle.LiveData;
 
@@ -9,6 +10,8 @@ import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
 import com.course.android.ct.moyosafiapp.models.api.LogPatientResponse;
 import com.course.android.ct.moyosafiapp.models.api.PatientService;
 import com.course.android.ct.moyosafiapp.models.api.RetrofitClientInstance;
+import com.course.android.ct.moyosafiapp.models.api.UpdatePatientPictureResponse;
+import com.course.android.ct.moyosafiapp.models.api.UpdatePatientResponse;
 import com.course.android.ct.moyosafiapp.models.dao.PatientDao;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -121,8 +125,9 @@ public class PatientRepository {
 
             @Override
             public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
-                System.out.println("+++++++++++++++++++++++++++++++++++++"+t);
-                callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
+                String errorMessage = t.getMessage();
+                if(errorMessage.equals("Failed to connect to /192.168.43.85:80")) callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
+                else callback.onFailure(call, t);
             }
         });
     }
@@ -159,15 +164,20 @@ public class PatientRepository {
                         String patient_role = response.body().getPatient_role();
                         String id_doctor = response.body().getId_doctor(); int idDoctor =  id_doctor != null ? Integer.parseInt(id_doctor) : 0;
                         String id_doctor_archived = response.body().getId_doctor_archived(); int idDoctorArchived =  id_doctor != null ? Integer.parseInt(id_doctor_archived) : 0;
-                        String patient_picture = response.body().getPatient_picture();
                         String patient_commune = response.body().getPatient_commune();
                         String patient_quater = response.body().getPatient_quater();
                         String patient_size = response.body().getPatient_size();  long patientSize =  patient_size != null ? Long.parseLong(patient_size) : 0;
                         String patient_weight = response.body().getPatient_weight(); long patientWeight =  patient_weight != null ? Long.parseLong(patient_weight) : 0;
 
+                        // For picture
+                        byte[] patient_picture = null;
+                        String patientPictureBase64 = response.body().getPatient_picture();
+                        if(patientPictureBase64 != null) patient_picture = Base64.decode(patientPictureBase64, Base64.DEFAULT);
+
                         // create patient 2 for insert in local
                         Patient patientResponse = new Patient(patient_name, patient_postname, patient_surname, patient_gender, patient_mail, patient_phone_number, patient_password, patient_date_created, age, patient_role);
-                        patientResponse.setId_doctor(idDoctor); patientResponse.setId_doctor_archived(idDoctorArchived); patientResponse.setPatient_picture(patient_picture);
+                        patientResponse.setId_doctor(idDoctor); patientResponse.setId_doctor_archived(idDoctorArchived);
+                        patientResponse.setPatient_picture(patient_picture);
                         patientResponse.setPatient_commune(patient_commune); patientResponse.setPatient_quater(patient_quater); patientResponse.setPatient_size(patientSize);
                         patientResponse.setPatient_weight(patientWeight);
                         patientResponse.setId(patient_id);
@@ -184,6 +194,7 @@ public class PatientRepository {
                                 if (patients == null || patients.isEmpty()) {
                                     // the data is empty, we insert patient au lieu de l'update car dans ce sens aucun patient n'est présent dans la base local
                                     insertPatient(patientResponse);
+//                                    patientDao.updatePatientPicture(patient_role, patient_picture);
                                     System.out.println("+++++++++++++++++++++++++++++ on insert les choses dans la database +++++++++++++++++++++++++++++");
                                     // on fait appel au callback onResponse du ViewModel qui est le même que celui du fragment chargé par la création du compte, et on lui passe en paramètre le resultat
                                     callback.onResponse(call, response);
@@ -208,11 +219,109 @@ public class PatientRepository {
 
             @Override
             public void onFailure(Call<LogPatientResponse> call, Throwable t) {
-                System.out.println("++++++++++++++++++++++++++++ yes :++++++++++++++++++++++++++++");
-                callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
+                String errorMessage = t.getMessage();
+                if(errorMessage.equals("Failed to connect to /192.168.43.85:80")) callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
+                else callback.onFailure(call, t);
             }
         });
     }
+
+    public void updatePatientProfileApi(Map<String, String>  newPatientProfile, final Callback<UpdatePatientResponse> callback) {
+        Call<UpdatePatientResponse> call = patientService.updatePatientProfileApi(newPatientProfile);
+        call.enqueue(new Callback<UpdatePatientResponse>() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(Call<UpdatePatientResponse> call, Response<UpdatePatientResponse> response) {
+                if (response.isSuccessful()) {
+                    boolean success = response.body().isSuccess();
+                    String error = response.body().getError();
+
+                    System.out.println("++++++++++++++++++++++++++++ glo : "+success+"++++++++++++++++++++++++++++");
+
+                    if(success) {
+                        // we save also data in local database
+                        String token = response.body().getPatient_role();
+                        String patient_name = response.body().getPatient_name();
+                        String patient_phone_number = response.body().getPatient_phone_number();
+                        int patient_age = response.body().getPatient_age();
+                        long patient_weight = response.body().getPatient_weight();
+                        long patient_size = response.body().getPatient_size();
+                        String patient_commune = response.body().getPatient_commune();
+                        String patient_quater = response.body().getPatient_quater();
+                        String patient_gender = response.body().getPatient_gender();
+
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... Voids) {
+                                patientDao.updateProfilePatient(token, patient_name, patient_phone_number, patient_age, patient_weight, patient_size, patient_commune, patient_quater, patient_gender);
+                                callback.onResponse(call, response);
+                                return null;
+                            }
+                        }.execute();
+                    } else {
+                        callback.onFailure(call, new Throwable(error));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdatePatientResponse> call, Throwable t) {
+                // on fait appel au callback onResponse du ViewModel qui est le même que celui du fragment chargé par la création du compte, et on lui passe en paramètre le resultat
+                String errorMessage = t.getMessage();
+                if(errorMessage.equals("Failed to connect to /192.168.43.85:80")) callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
+                else callback.onFailure(call, t);
+            }
+        });
+    }
+
+    public void updatePatientPictureApi(Map<String, RequestBody> pictureRequestBodyMap, final Callback<UpdatePatientPictureResponse> callback) {
+        Call<UpdatePatientPictureResponse> call = patientService.updatePatientPictureApi(pictureRequestBodyMap);
+        call.enqueue(new Callback<UpdatePatientPictureResponse>() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(Call<UpdatePatientPictureResponse> call, Response<UpdatePatientPictureResponse> response) {
+                if (response.isSuccessful()) {
+                    boolean success = response.body().isSuccess();
+                    String error = response.body().getError();
+
+                    System.out.println("++++++++++++++++++++++++++++ glo : "+success+"++++++++++++++++++++++++++++");
+
+                    if(success) {
+                        // we save also data in local database
+                        String token = response.body().getPatient_role();
+
+                        String patientPictureBase64 = response.body().getPatient_picture();
+                        byte[] imageBytes = Base64.decode(patientPictureBase64, Base64.DEFAULT); // Convertir la chaîne base64 en tableau de bytes si nécessaire
+
+//                        byte[] imageBytes = response.body().getPatient_picture();
+
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... Voids) {
+                                patientDao.updatePatientPicture(token, imageBytes); // dans la base de données local
+                                callback.onResponse(call, response);
+                                return null;
+                            }
+                        }.execute();
+                    } else {
+                        callback.onFailure(call, new Throwable(error));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdatePatientPictureResponse> call, Throwable t) {
+                // on fait appel au callback onResponse du ViewModel qui est le même que celui du fragment chargé par la création du compte, et on lui passe en paramètre le resultat
+                String errorMessage = t.getMessage();
+                if(errorMessage.equals("Failed to connect to /192.168.43.85:80")) callback.onFailure(call, new Throwable("Connectez-vous à l'internet"));
+                else callback.onFailure(call, t);
+
+            }
+        });
+
+    }
+
+
 
     // ********************************************** for local **********************************************
     // LES 5 FONCTIONS CI-DESSOUS SONT DES APIS QUE NOUS ALLONS EXPOSER A L'EXTERIEUR
@@ -229,15 +338,8 @@ public class PatientRepository {
     }
 
     // 2- updatePatient
-    @SuppressLint("StaticFieldLeak")
-    public void updatePatient(Patient patient) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                patientDao.updatePatient(patient);
-                return null;
-            }
-        }.execute();
+    public void updateProfilePatient(String token, String userName, String phoneNumber, int userAge, long userWeight, long userSize, String userCommune, String userQuater, String userGender) {
+        patientDao.updateProfilePatient(token, userName, phoneNumber, userAge, userWeight, userSize, userCommune, userQuater, userGender);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -255,6 +357,12 @@ public class PatientRepository {
     public int getIdPatient(String token) {
         return patientDao.getIdPatient(token);
     }
+
+    public void updatePatientPicture(String token, byte[] imageString) {
+        patientDao.updatePatientPicture(token, imageString);
+    }
+
+
 
     // 3- deletePatient
     public void deletePatient(Patient patient) {
@@ -274,8 +382,8 @@ public class PatientRepository {
     }
 
     // 6- getPatient
-    public  LiveData<Patient> getPatient(int id) {
-        return patientDao.getPatient(id);
+    public  LiveData<Patient> getPatient(String token) {
+        return patientDao.getPatient(token);
     }
 }
 

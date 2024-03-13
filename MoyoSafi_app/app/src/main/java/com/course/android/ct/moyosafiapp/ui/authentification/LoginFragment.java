@@ -66,13 +66,6 @@ public class LoginFragment extends Fragment {
 
         // LAUNCH MAIN ACTIVITY WHEN IDENTIFIES ARE CORRECT
         binding.btnLogin.setOnClickListener(v-> logPatient());
-//        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class); // we take the main activity
-//                startActivity(intent); // we start it
-//            }
-//        });
 
         // **************************************** LAUNCH OTHER FRAGMENT WHEN SPECIFICS LINKS ARE CLICKED **************************************************
         // For inscription page
@@ -132,8 +125,10 @@ public class LoginFragment extends Fragment {
                 if(errorMessage.equals("Nom d'utilisateur ou mot de passe incorrect")) {
                     binding.errorMessage.setVisibility(View.VISIBLE);
                 } else if(errorMessage.equals("Connectez-vous à l'internet")) {
-                    binding.errorMessage.setVisibility(View.INVISIBLE);
+                    binding.errorMessage.setVisibility(View.GONE);
                     Toast.makeText(getActivity().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                } else {
+                    System.out.println("++++++++++++++++++++++++++++++++++++"+errorMessage);
                 }
             }
         });

@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
@@ -31,5 +32,14 @@ public interface VitalSignDao {
     LiveData<List<VitalSign>> getVitalSignsSortedByDateTime();
 
     @Query("SELECT * FROM vitalsign ORDER BY vital_date DESC, vital_hour DESC LIMIT 1")
-    LiveData<VitalSign> getLastVitalSign();
+    LiveData<VitalSign> getLastVitalSignForUi();
+
+    @Query("SELECT * FROM vitalsign WHERE id_patient = :id_patient ORDER BY vital_date DESC, vital_hour DESC LIMIT 1")
+    VitalSign getVitalSignForPatientConnected(int id_patient);
+
+    @Query("SELECT * FROM vitalsign ORDER BY vital_date DESC, vital_hour DESC LIMIT 1")
+    VitalSign getLastVitalSignMedium();
+
+    @Update
+    void updateVitalSign(VitalSign vitalSign);
 }

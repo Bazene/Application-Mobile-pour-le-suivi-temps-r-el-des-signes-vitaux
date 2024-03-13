@@ -58,30 +58,30 @@ public class SettingsFragment extends Fragment {
 //            profile_bloc = view.findViewById(R.id.profile_bloc);
 
             // ACTIONS
-            // 1- to settings_to_bluetooth view
+            // 1- settings_to_bluetooth view
+            binding.settingsToBluetooth.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), BluetoothActivity.class);
+                    startActivity(intent);
+                }
+            });
 
-                binding.settingsToBluetooth.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), BluetoothActivity.class);
-                        startActivity(intent);
-                    }
-                });
-
-            // 2- to profile_bloc view
-                binding.profileBloc.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), ProfilActivity.class);
-                        startActivity(intent);
-                    }
-                });
+            // 2- profile_bloc view
+            binding.profileBloc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ProfilActivity.class);
+                    startActivity(intent);
+                }
+            });
 
             // 3- to btn-logout view (deconnexion action)
             binding.logOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     SessionManager.getInstance(getContext()).isLogout();
+
                     System.out.println("+++++++++++++++++++++++ le patient est deconnecté :"+sessionManager.getUser_name()+"++++++");
                     Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
                     startActivity(intent);

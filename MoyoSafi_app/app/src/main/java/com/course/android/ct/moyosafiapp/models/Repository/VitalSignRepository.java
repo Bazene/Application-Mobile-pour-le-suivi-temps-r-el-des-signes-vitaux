@@ -23,8 +23,20 @@ public class VitalSignRepository {
     }
 
     // FUNCTIONS
-    public LiveData<VitalSign> getLastVitalSign() {
-        return vitalSignDao.getLastVitalSign();
+    public LiveData<VitalSign> getLastVitalSignForUi() {
+        return vitalSignDao.getLastVitalSignForUi();
+    }
+
+    public VitalSign getLastVitalSignMedium() {
+        return vitalSignDao.getLastVitalSignMedium();
+    }
+
+    public VitalSign getVitalSignForPatientConnected(int idPatient) {
+        return vitalSignDao.getVitalSignForPatientConnected(idPatient);
+    }
+
+    public void updateVitalSign(VitalSign vitalSing) {
+        vitalSignDao.updateVitalSign(vitalSing);
     }
 
     // 1-

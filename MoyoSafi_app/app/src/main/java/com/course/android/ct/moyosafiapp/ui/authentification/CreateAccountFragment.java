@@ -122,8 +122,6 @@ public class CreateAccountFragment extends Fragment {
 
                     Patient new_patient = new Patient(user_name, past_name, sur_name, gender, mail_address, phone_number, user_password, date_created ,age_user, role);
 
-                    // check  if the patient is already in database using his mail address
-//                    if(isPatientExitInTable(allPatientsInTable, mail_address)) {
 
                         //*********************************************************************************************************
                         // ********************************************** for remote **********************************************
@@ -169,7 +167,7 @@ public class CreateAccountFragment extends Fragment {
                                     binding.errorMessage.setText(errorMessage);
                                     Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
                                 } else {
-                                    Toast.makeText(requireContext(), ""+t, Toast.LENGTH_LONG).show();
+                                    System.out.println("++++++++++++++++++++++++++++++++++++"+errorMessage);
                                 }
                             }
                         });

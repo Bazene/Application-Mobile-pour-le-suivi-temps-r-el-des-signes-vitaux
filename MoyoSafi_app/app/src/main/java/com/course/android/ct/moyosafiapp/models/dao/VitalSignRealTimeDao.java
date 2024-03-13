@@ -29,4 +29,7 @@ public interface VitalSignRealTimeDao {
 
     @Query("SELECT * FROM vitalSignRealTime ORDER BY vital_date DESC, vital_hour DESC LIMIT 1")
     Flowable<VitalSignRealTime> getNewVitalRealTime();
+
+//    @Delete
+//    void deleteAllRealTimeVitalSign(VitalSignRealTime vitalSignRealTime);
 }

@@ -23,6 +23,10 @@ public class VitalSignRealTimeRepository {
         vitalSignRealTimeDao.insertVitalSignRealTime(vitalSignRealTime);
     }
 
+    public void deleteAllRealTimeVitalSign() {
+//        vitalSignRealTimeDao.deleteAllRealTimeVitalSign();
+    }
+
     // 2- update vital sign in real time
     public void updateVitalSignRealTime(int id_patient, Float temperature, int heart_rate, int oxygen_level, String vital_hour, String vital_date, int nbrIteration) {
         vitalSignRealTimeDao.updateVitalSignRealTime(id_patient, temperature, heart_rate, oxygen_level, vital_hour, vital_date, nbrIteration);

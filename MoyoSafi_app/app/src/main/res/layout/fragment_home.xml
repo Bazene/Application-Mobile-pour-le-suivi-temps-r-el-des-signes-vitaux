@@ -235,7 +235,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/data_received"
+                            android:id="@+id/heart_rate_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"
@@ -248,7 +248,7 @@
                             android:layout_height="wrap_content"
                             android:text="BPM"
                             android:textColor="@color/gray_c"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
 
                     </LinearLayout>
 
@@ -303,6 +303,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/spo2_vlaue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"
@@ -315,7 +316,7 @@
                             android:layout_height="wrap_content"
                             android:text="%"
                             android:textColor="@color/gray_c"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
 
                     </LinearLayout>
 
@@ -378,6 +379,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/temp_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"
@@ -390,7 +392,7 @@
                             android:layout_height="wrap_content"
                             android:text="°C"
                             android:textColor="@color/gray_c"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
 
                     </LinearLayout>
 
@@ -450,7 +452,7 @@
                             android:orientation="horizontal"
                             android:layout_marginRight="5dp">
                             <TextView
-                                android:id="@+id/systol_textView"
+                                android:id="@+id/systolic_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="--"
@@ -465,7 +467,7 @@
                                 android:textSize="20dp" />
 
                             <TextView
-                                android:id="@+id/diastol_textView"
+                                android:id="@+id/diastolic_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="--"
@@ -478,7 +480,7 @@
                             android:layout_height="wrap_content"
                             android:text="mmHg"
                             android:textColor="@color/gray_c"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
 
                     </LinearLayout>
 
@@ -555,7 +557,7 @@
                             android:layout_height="wrap_content"
                             android:text="mmol/L"
                             android:textColor="@color/gray_c"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
 
                     </LinearLayout>
 
