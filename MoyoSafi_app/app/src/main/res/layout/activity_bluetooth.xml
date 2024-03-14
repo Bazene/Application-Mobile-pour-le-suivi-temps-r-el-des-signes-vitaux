@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linear_layout_switch"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp">
 
@@ -85,21 +85,11 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/text_connection"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone"
-                android:textSize="18sp"
-                android:textColor="@color/third_color"/>
-
-            <TextView
                 android:id="@+id/paired_devices_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_connection"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="20dp"
                 android:text="@string/paired_device"
                 android:textColor="@color/black"
@@ -131,18 +121,6 @@
                 android:textColor="@color/black"
                 android:gravity="center_vertical"
                 android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/text_input_stream"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/new_device_name"
-                android:layout_marginTop="20dp"
-                android:text="G"
-                android:textSize="18sp"
-                android:textColor="@color/principal_color"
-                android:gravity="center_vertical"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

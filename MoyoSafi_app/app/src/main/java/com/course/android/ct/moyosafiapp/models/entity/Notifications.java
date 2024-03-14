@@ -1,12 +1,10 @@
 package com.course.android.ct.moyosafiapp.models.entity;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 
-@Entity(tableName = "notifications",
-        foreignKeys = @ForeignKey(entity = Notifications.class, parentColumns="id", childColumns="id_patient"))
+@Entity(tableName = "notifications")
 public class Notifications {
 
     // VARIABLES
@@ -14,6 +12,8 @@ public class Notifications {
     private int id;
 
     private int id_patient;
+    private int id_vitalSign;
+    private int id_doctor;
     private String notification_content;
     private String notification_date;
     private String notification_time;

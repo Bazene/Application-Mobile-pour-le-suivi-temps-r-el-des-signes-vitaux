@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialogFragment;
@@ -15,9 +16,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class VitalSignDialogFragment extends AppCompatDialogFragment {
 
@@ -27,6 +32,7 @@ public class VitalSignDialogFragment extends AppCompatDialogFragment {
     private EditText edit_glycemie_vital;
     private TextView btn_submit_vital;
     private Boolean nonVitalSignInRealtime ;
+    private SessionManager sessionManager;
 
     private PatientViewModel patientViewModel;
 
@@ -40,7 +46,6 @@ public class VitalSignDialogFragment extends AppCompatDialogFragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             System.out.println("+++++++++++++++++++++++++++++++ Le dialog est cree ++++++++++++++++++++++++++++++++");
 
-
             View view = LayoutInflater.from(requireContext()).inflate(R.layout.fragment_vital_sign_dialog, null);
 
             System.out.println("+++++++++++++++++++++++++++++++ Le dialog est creeeeeeeeee ++++++++++++++++++++++++++++++++");
@@ -50,35 +55,37 @@ public class VitalSignDialogFragment extends AppCompatDialogFragment {
             edit_systol_value = view.findViewById(R.id.edit_systol_value);
             edit_diastol_value = view.findViewById(R.id.edit_diastol_value);
             edit_glycemie_vital = view.findViewById(R.id.edit_glycemie_vital);
-            nonVitalSignInRealtime = false;
 
             patientViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getContext())).get(PatientViewModel.class); //initialise the ViewModel
+            sessionManager = SessionManager.getInstance(getContext()); // initialise the session
 
             // AUTOCOMPLETE EDITTEXT
-            patientViewModel.getLastVitalSignForUi().observe(getActivity(), new Observer<VitalSign>() {
+            int id_patient = sessionManager.getId_patient() ;
+            final VitalSign[] lastVitalSign = new VitalSign[1];
+
+            patientViewModel.getLastVitalSignForUi(id_patient).observe(getActivity(), new Observer<VitalSign>() {
                 @Override
                 public void onChanged(VitalSign vitalSign) {
                     if(vitalSign != null) {
                         edit_systol_value.setText(""+vitalSign.getSystolic_blood());
                         edit_diastol_value.setText(""+vitalSign.getDiastolic_blood());
                         edit_glycemie_vital.setText(""+vitalSign.getBlood_glucose());
-                        nonVitalSignInRealtime = true;
-
-                    } else {
-                        nonVitalSignInRealtime = false;
-                        edit_systol_value.setFocusable(false);
-                        edit_systol_value.setClickable(false);
-
-                        edit_diastol_value.setFocusable(false);
-                        edit_diastol_value.setClickable(false);
-
-                        edit_glycemie_vital.setFocusable(false);
-                        edit_glycemie_vital.setClickable(false);
+                        lastVitalSign[0] = vitalSign;
                     }
+//                    else {
+//                        nonVitalSignInRealtime = false;
+//                        edit_systol_value.setFocusable(false);
+//                        edit_systol_value.setClickable(false);
+//
+//                        edit_diastol_value.setFocusable(false);
+//                        edit_diastol_value.setClickable(false);
+//
+//                        edit_glycemie_vital.setFocusable(false);
+//                        edit_glycemie_vital.setClickable(false);
+//                    }
                 }
             });
 
-            // ACTIONS
             builder.setView(view)
                     .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                         @Override
@@ -96,8 +103,33 @@ public class VitalSignDialogFragment extends AppCompatDialogFragment {
                             String diastol_valueText = edit_diastol_value.getText().toString();
                             String glycemie_vital = edit_glycemie_vital.getText().toString();
 
-                            // we send to the main fragment
-                            listener.setTextOnMainView(systol_value, diastol_valueText, glycemie_vital, nonVitalSignInRealtime);
+                            if(lastVitalSign[0] != null) {
+                                try {
+                                    int newSystolValue = Integer.parseInt(systol_value);
+                                    int newDiastolValue = Integer.parseInt(diastol_valueText);
+                                    int newGlycemieValue = Integer.parseInt(glycemie_vital);
+                                    int spo2 = lastVitalSign[0].getOxygen_level();
+                                    float temp = lastVitalSign[0].getTemperature();
+                                    int hz = lastVitalSign[0].getHeart_rate();
+
+                                    // Get actual date and hour
+                                    LocalDateTime now = LocalDateTime.now();
+                                    DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Formater la date
+                                    DateTimeFormatter formatterHeure = DateTimeFormatter.ofPattern("HH:mm:ss"); // Formater l'heur
+                                    String actuelDate = now.format(formatterDate);
+                                    String actuelHour = now.format(formatterHeure);
+
+                                    VitalSign vitalSign1 = new VitalSign(id_patient,temp,hz, spo2,newGlycemieValue, newSystolValue, newDiastolValue, actuelHour, actuelDate);
+
+                                    // we send to the main fragment
+                                    listener.setTextOnMainView(vitalSign1);
+                                }  catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                    Toast.makeText(getContext(), "Veillez remplire tout les champs", Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                Toast.makeText(getContext(), "Aucune donnée enregistrer, connectez votre braclet avant d'entrer vos valeurs", Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
 
@@ -111,6 +143,6 @@ public class VitalSignDialogFragment extends AppCompatDialogFragment {
 
     // INTERFACE
     public interface VitalSignDialogListener {
-        void setTextOnMainView(String new_systol_value, String new_diastol_value, String new_glycemie_vital, Boolean nonVitalSignInRealtime);
+        void setTextOnMainView(VitalSign vitalSign);
     }
 }

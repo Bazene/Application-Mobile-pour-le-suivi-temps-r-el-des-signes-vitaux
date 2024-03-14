@@ -10,19 +10,15 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.databinding.FragmentLoginBinding;
 import com.course.android.ct.moyosafiapp.models.SessionManager;
 import com.course.android.ct.moyosafiapp.models.api.LogPatientResponse;
-import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.ui.MainActivity;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -105,10 +101,14 @@ public class LoginFragment extends Fragment {
         patientViewModel.logPatient(patient_name, patient_password, new Callback<LogPatientResponse>() {
             @Override
             public void onResponse(Call<LogPatientResponse> call, Response<LogPatientResponse> response) {
-
                 if (response.isSuccessful()) {
                     String token = response.body().getPatient_role();
                     String user_name = response.body().getPatient_name();
+                    int patient_id = response.body().getPatient_id();
+                    sessionManager.setId_patient(patient_id);
+
+                    System.out.println("++++++++++++++++++++++++++ login okey +++++++++++++++++++++++++");
+                    System.out.println("++++++++++++++++++++++++++ Patient id "+patient_id+"+++++++++++++++++++++++++");
 
                     sessionManager.setUser_name(user_name);
                     sessionManager.setAuthToken(token);
@@ -127,21 +127,13 @@ public class LoginFragment extends Fragment {
                 } else if(errorMessage.equals("Connectez-vous à l'internet")) {
                     binding.errorMessage.setVisibility(View.GONE);
                     Toast.makeText(getActivity().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                } else if(errorMessage.equals("timeout")) {
+                    binding.errorMessage.setVisibility(View.GONE);
+                    Toast.makeText(getActivity().getApplicationContext(), "Erreur de connexion, essaye de nouveau", Toast.LENGTH_LONG).show();
                 } else {
                     System.out.println("++++++++++++++++++++++++++++++++++++"+errorMessage);
                 }
             }
         });
-    }
-
-    // GET ALL PATIENTS FUNCTION IN LOCAL
-    private LiveData<List<Patient>> getAllPatients() {
-        return this.patientViewModel.getAllPatients();
-    }
-
-    // GET ALL PATIENTS FUNCTION ON LINE
-    private List<Patient> getAllPatinetsRemote() {
-//        return  this.patientViewModel.getPatientsOnline();
-        return null;
     }
 }

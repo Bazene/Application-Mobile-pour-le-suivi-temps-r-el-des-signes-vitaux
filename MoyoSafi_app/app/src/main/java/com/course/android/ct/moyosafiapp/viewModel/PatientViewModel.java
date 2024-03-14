@@ -1,8 +1,7 @@
 package com.course.android.ct.moyosafiapp.viewModel;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -24,7 +23,6 @@ import com.course.android.ct.moyosafiapp.models.entity.VitalSignRealTime;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,10 +62,10 @@ public class PatientViewModel extends ViewModel {
         this.executor = executor; // ce ci, nous facilitera l'exécution en arrière-plan de certaines méthodes, aulieu d'utiliser les Threads
 
         observeChanges(); // pour démarrer l'observation des changements dès que le ViewModel est créé.
+        observeChangesOnVitalSing();
     }
 
     // FUNCTIONS
-
 
     // -----------------------------------------------------------------------------------------------------------
     // 1- FOR PATIENT
@@ -80,19 +78,7 @@ public class PatientViewModel extends ViewModel {
     public int getIdPatient(String token) {
         return patientRepository.getIdPatient(token);
     }
-
-    public void updateProfilePatient(String token, String userName, String phoneNumber, int userAge, long userWeight, long userSize, String userCommune, String userQuater, String userGender) {
-        executor.execute(()->patientRepository.updateProfilePatient(token, userName, phoneNumber, userAge, userWeight, userSize, userCommune, userQuater, userGender));
-    }
-
-    public void updatePatientPicture(String token, byte[] imageString) {
-        executor.execute(()->patientRepository.updatePatientPicture(token, imageString));
-    }
-
-    public LiveData<List<Patient>> getAllPatients() {
-        // here we don't use the class Executor, because LiveDate run instructions in background
-        return patientRepository.getAllPatients();
-    }
+    
 
     //*********************************************************************************************************
     // ********************************************** for remote **********************************************
@@ -158,12 +144,11 @@ public class PatientViewModel extends ViewModel {
     }
 
 
-
     // -----------------------------------------------------------------------------------------------------------
     // 3- FOR VITAL SIGN
     // -----------------------------------------------------------------------------------------------------------
 
-    // Observer ajouté au flux RxJava
+    // Observer ajouté au flux RxJava dans VitalSignRealTime
     private void observeChanges() {
         compositeDisposable.add(
         vitalSignRealTimeRepository.observeChanges()
@@ -172,14 +157,30 @@ public class PatientViewModel extends ViewModel {
                 .subscribe(newVitalRealTime -> {
                    // abonnement à l'Observable. La fonction lambda fournie sera exécutée chaque fois que l'Observable émettra une notification
 
-//                    Log.d("YourViewModel", "++++++++++++++++++++++ Changement détecté dans la base de données. Temp : "+newVitalRealTime.getTemperature()+"+++++++++++++++++++++++++++++++");
+                    Log.d("YourViewModel", "++++++++++++++++++++++ Changement détecté dans la base de données. Temp : "+newVitalRealTime.getTemperature()+"+++++++++++++++++++++++++++++++");
                     calculMoyenne(newVitalRealTime); // on calcul la moyenne et on l'enregistrer dans la base
                 })
         );
     }
 
+    final VitalSign[] newVitalSign = new VitalSign[1];
+    private void observeChangesOnVitalSing() {
+        compositeDisposable.add(
+                vitalSignRepository.observeChangesOfVitalSign()
+                        .subscribeOn(Schedulers.io()) // Schedulers.io() : thread généralement utilisé pour les tâches longues qui ne bloquent pas le thread principal
+                        .observeOn(Schedulers.io()) // les notifications de l'Observable doivent être reçues sur le thread Schedulers.io()
+                        .subscribe(vitalSign-> {
+                            // abonnement à l'Observable. La fonction lambda fournie sera exécutée chaque fois que l'Observable émettra une notification
+
+                            newVitalSign [0] = vitalSign;
+                            Log.d("YourViewModel", "++++++++++++++++++++++ Changement détecté dans la base de données. Temp : "+vitalSign.getTemperature()+"+++++++++++++++++++++++++++++++");
+                        })
+        );
+    }
+
     private void calculMoyenne(VitalSignRealTime newVitalRealTime) {
-       VitalSign lastVitalSing = vitalSignRepository.getLastVitalSignMedium();
+//       VitalSign lastVitalSing = vitalSignRepository.getLastVitalSignMedium();
+       VitalSign lastVitalSing = newVitalSign [0];
 
        int blood_glucose = 0; int systolic_blood = 0; int diastolic_blood = 0;
 
@@ -220,6 +221,8 @@ public class PatientViewModel extends ViewModel {
                    vitalSignRepository.insertVitalSign(new_vitalSign);
                    System.out.println("++++++++++++++++++++++++++++ Nbr itération :" + newVitalRealTime.getNbrIteration() + "+++++++++++++++++++++++++++++++");
 
+                   // we reunitialise the data base
+                   vitalSignRealTimeRepository.deleteAllRealTimeVitalSign();
 
                } else {
                    try {
@@ -252,76 +255,31 @@ public class PatientViewModel extends ViewModel {
                        e.printStackTrace();
                    }
                }
-           }
        }
+   }
 
-    public LiveData<VitalSign> getLastVitalSignForUi() {
-        return vitalSignRepository.getLastVitalSignForUi();
+    public LiveData<VitalSign> getLastVitalSignForUi(int id_patient) {
+        return vitalSignRepository.getLastVitalSignForUi(id_patient);
     }
 
-    @SuppressLint("StaticFieldLeak")
-    public void insertOtherVitalSign(Context context1, int new_systol_value, int new_diastol_value, int new_glycemie_vital) {
-
-        sessionManager = SessionManager.getInstance(context1);
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids){
-                String token = sessionManager.getAuthToken();
-                int idPatient = getIdPatient(token);
-                VitalSign vitalSignForPatientConnected = vitalSignRepository.getVitalSignForPatientConnected(idPatient);
-
-                Float temp = vitalSignForPatientConnected.getTemperature();
-                int hz = vitalSignForPatientConnected.getHeart_rate();
-                int spo2 = vitalSignForPatientConnected.getOxygen_level();
-
-                // Get actual date and hour
-                LocalDateTime now = LocalDateTime.now();
-                DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Formater la date
-                DateTimeFormatter formatterHeure = DateTimeFormatter.ofPattern("HH:mm:ss"); // Formater l'heur
-                String actuelDate = now.format(formatterDate);
-                String actuelHour = now.format(formatterHeure);
-
-                VitalSign newVitalSign = new VitalSign(idPatient, temp, hz, spo2, new_glycemie_vital, new_systol_value, new_diastol_value, actuelHour, actuelDate);
-                vitalSignRepository.insertVitalSign(newVitalSign);
-
-                return null;
-            }
-        }.execute();
+    public void insertOtherVitalSign(VitalSign vitalSign) {
+        executor.execute(()->vitalSignRepository.insertOtherVitalSign(vitalSign));
     }
 
-    public void insertVitalSign(VitalSign vitalSign) {
-        executor.execute(()-> vitalSignRepository.insertVitalSign(vitalSign));
+    public void deleteAllRealTimeVitalSignOnBluetoothServiceThread() {
+        executor.execute(()->vitalSignRealTimeRepository.deleteAllRealTimeVitalSign());
     }
-
-    public void deleteVitalSign(VitalSign vitalSign) {
-        executor.execute(()->vitalSignRepository.deleteVitalSign(vitalSign));
-    }
-
-    public void deleteAllVitalSigns() {
-        executor.execute(()->vitalSignRepository.deleteAllVitalSigns());
-    }
-
-    public void deleteVitalSignPerHour(String vital_hour) {
-        executor.execute(()->vitalSignRepository.deleteVitalSignPerHour(vital_hour));
-    }
-
-    public LiveData<VitalSign> getVitalSign(int id) {
-        return  vitalSignRepository.getVitalSign(id);
-    }
-
-    public  LiveData<List<VitalSign>> getVitalSignsSortedByDateTime() {
-        return  vitalSignRepository.getVitalSignsSortedByDateTime();
-    }
-
-
-
-    // -----------------------------------------------------------------------------------------------------------
-    // 4- FOR NOTIFICATIONS
-    // -----------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCleared() {
         compositeDisposable.clear();
+    }
+
+
+    // -----------------------------------------------------------------------------------------------------------
+    //  FOR NOTIFICATIONS
+    // -----------------------------------------------------------------------------------------------------------
+    public void inspectNotification() {
+
     }
 }

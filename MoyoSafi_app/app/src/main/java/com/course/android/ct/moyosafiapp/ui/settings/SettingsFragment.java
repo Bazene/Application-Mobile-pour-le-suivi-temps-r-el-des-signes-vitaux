@@ -81,7 +81,10 @@ public class SettingsFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     SessionManager.getInstance(getContext()).isLogout();
-
+                    SessionManager.getInstance(getContext()).remoteId_patient();
+                    
+                    binding.bluetoothTextConDis.setText("déconnecté");
+                    
                     System.out.println("+++++++++++++++++++++++ le patient est deconnecté :"+sessionManager.getUser_name()+"++++++");
                     Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
                     startActivity(intent);
@@ -94,7 +97,7 @@ public class SettingsFragment extends Fragment {
                 System.out.println("+++++++++++++++++++ VOUS ETES CONNECTER ++++++++++++++++++");
             } else {
                 sessionManager.isDisconnected();
-                binding.bluetoothTextConDis.setText("deconnecté");
+                binding.bluetoothTextConDis.setText("déconnecté");
                 System.out.println("+++++++++++++++++++ VOUS ETES DECONNECTER ++++++++++++++++++");
             }
 

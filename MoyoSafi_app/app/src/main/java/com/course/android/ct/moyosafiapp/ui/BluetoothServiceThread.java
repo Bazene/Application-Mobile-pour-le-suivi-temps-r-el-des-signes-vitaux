@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.course.android.ct.moyosafiapp.models.SessionManager;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
 
@@ -29,15 +31,13 @@ public class BluetoothServiceThread extends Service {
     private static BluetoothDevice bluetooth_device;
     private BluetoothThread bluetoothThread;
     private static SessionManager sessionManager;
+    private BluetoothSocket bluetoothSocket; // For point connexion
 
     // DEFAULT CONSTRUCT
     public BluetoothServiceThread() {
         super();
     }
 
-//    public BluetoothServiceThread(PatientViewModel patientViewModel) {
-//        this.patientViewModel = patientViewModel;
-//    }
 
     // static method (not native method)
     public static void startService(Context context, PatientViewModel patientViewModelBA, BluetoothDevice device) {
@@ -61,8 +61,6 @@ public class BluetoothServiceThread extends Service {
     public void onCreate() {
         super.onCreate();
         sessionManager = SessionManager.getInstance(contextBluetoothActivity);
-
-        System.out.println("+++++++++++++++++++++++++ We are in the service ++++++++++++++++++++++++++");
     }
 
     @Override
@@ -71,26 +69,40 @@ public class BluetoothServiceThread extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("+++++++++++++++++++++ Before Thread ++++++++++++++++++++++++");
-
         // Instancier et exécuter la tâche AsyncTask
-        // Instancier et exécuter la tâche AsyncTask
-        bluetoothThread = new BluetoothThread(patientViewModel);
+        bluetoothThread = new BluetoothThread(patientViewModel, bluetoothSocket);
         bluetoothThread.execute();
 
-        System.out.println("+++++++++++++++++++++ After Thread ++++++++++++++++++++++++");
         return START_STICKY; // Redémarre le service s'il est tué par le système
     }
+
+
 
     @Override
     public void onDestroy() {
         // Arrêter le thread Bluetooth lorsque le service est détruit
-        // Arrêter le thread Bluetooth lorsque le service est détruit
         if (bluetoothThread != null) {
             bluetoothThread.cancel(true);
+        }
+
+        // Fermer la connexion Bluetooth
+        try {
+            if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
+                bluetoothSocket.close();
+                System.out.println("++++++++++++++++++++++++ on tu le service ++++++++++++++++++++++++++++");
+            }
+
+            // Vérifier si le BluetoothSocket est null avant de supprimer les données de la base de données
+            if (bluetoothSocket == null) {
+                // Le BluetoothSocket est null, vous pouvez donc supprimer les données de la base de données via le ViewModel
+                // Supprimer les données de la base de données en utilisant le ViewModel ici
+                System.out.println("++++++++++++++++++++++++ bluetoothSocket is null ++++++++++++++++++++++++++++");
+                patientViewModel.deleteAllRealTimeVitalSignOnBluetoothServiceThread(); // Remplacez cette ligne avec la méthode appropriée pour supprimer les données de la base de données via le ViewModel
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         super.onDestroy();
@@ -100,6 +112,7 @@ public class BluetoothServiceThread extends Service {
     private static class BluetoothThread extends AsyncTask<Void, Map<String, String>, Void> {
         BluetoothSocket bluetoothSocket; // For point connexion
         BluetoothAdapter myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
         InputStream inputStream;
@@ -108,9 +121,10 @@ public class BluetoothServiceThread extends Service {
 
         PatientViewModel patientViewModel;
 
-        // Add this constructor
-        BluetoothThread(PatientViewModel patientViewModel) {
+        // CONSTRUCT
+        BluetoothThread(PatientViewModel patientViewModel, BluetoothSocket bluetoothSocket) {
             this.patientViewModel = patientViewModel;
+            this.bluetoothSocket = bluetoothSocket;
         }
 
         @SuppressLint({"MissingPermission", "WrongThread", "StaticFieldLeak"})
@@ -125,15 +139,18 @@ public class BluetoothServiceThread extends Service {
                 System.out.println("++++++++ bluetooth Connect okay ++++++++++++");
 
                 if (bluetoothSocket.isConnected()) {
-
                     // Obtenez le nom du périphérique connecté
                     String connectedDeviceName = bluetoothSocket.getRemoteDevice().getName();
 
                     // Envoi du message (connexion réussie) et du nom de l'appareil où on est connecté
-                    // a faire ici
+                    Intent intent = new Intent("bluetooth-event");
+                    intent.putExtra("event", BluetoothActivity.MESSAGE_CONNECTED); // ici MESSAGE_DISCONNECTED  a deux comme valeur (on utilise le nom de la classe car c'est une variable static
+                    intent.putExtra("deviceName", connectedDeviceName);
+                    LocalBroadcastManager.getInstance(contextBluetoothActivity).sendBroadcast(intent);
+
+                    sessionManager.setConnectedToDevice(true); // help to know if we are connected or not
 
                     System.out.println("++++++++++++++++++++++++++++++ Vous etes connecter avec : " + connectedDeviceName + "+++++++++++++++++++++++++++++++++++++");
-
                     // RECUPERATION DE L'ID DU PATIENT
                     String token = sessionManager.getAuthToken();
                     int idPatient = patientViewModel.getIdPatient(token);
@@ -148,7 +165,6 @@ public class BluetoothServiceThread extends Service {
                     mapResult.put("idPatient", idPatientString);
 
                     inputStream = bluetoothSocket.getInputStream(); // on obtient le flux d'entrée Bluetooth
-
                     byte[] buffer = new byte[1024]; // création d'un tampon pour stocker les données lues
                     int bytesRead; // variable qui va contenir la donnée lue depuis le flux d'entrée dans le buffer
 
@@ -157,62 +173,73 @@ public class BluetoothServiceThread extends Service {
                     int j = 2;
 
                     while (!isCancelled()) {
-                        bytesRead = inputStream.read(buffer);
-                        receivedData = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+//                        try {
+                            bytesRead = inputStream.read(buffer);
+                            receivedData = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
 
-                        all_data_received = all_data_received + receivedData;
-                        String maChaine = "";
+                            all_data_received = all_data_received + receivedData;
+                            String maChaine = "";
 
-                        if (receivedData.contains("\n")) {
-                            maChaine = all_data_received.trim();
+                            if (receivedData.contains("\n")) {
+                                maChaine = all_data_received.trim();
 
-                            if (maChaine.contains(":")) { // FILTER LEVEL 1 (CHECK IF DATA HAS TOW PARTS)
-                                List<String> data = Arrays.asList(maChaine.split(":"));
+                                if (maChaine.contains(":")) { // FILTER LEVEL 1 (CHECK IF DATA HAS TOW PARTS)
+                                    List<String> data = Arrays.asList(maChaine.split(":"));
 
 
-                                if(i<j) {
-                                    mapResult.put(data.get(0), data.get(1));
-                                    i += 1;
-                                } else  {
-                                    mapResult.put(data.get(0), data.get(1));
+                                    if (i < j) {
+                                        mapResult.put(data.get(0), data.get(1));
+                                        i += 1;
+                                    } else {
+                                        mapResult.put(data.get(0), data.get(1));
 
-                                    // ********************** PARTAGE DES DONNEES RECU **********************
+                                        // ********************** PARTAGE DES DONNEES RECU **********************
 
-                                    // FILTER LEVEL 2 (CHECK IF DATA ARE GETTED)
-                                    if(!(mapResult.get("Temp")).equals("0") && !(mapResult.get("Hz")).equals("0") && !(mapResult.get("Spo2")).equals("0")) {
+                                        // FILTER LEVEL 2 (CHECK IF DATA ARE GETTED)
+                                        if (!(mapResult.get("Temp")).equals("0") && !(mapResult.get("Hz")).equals("0") && !(mapResult.get("Spo2")).equals("0")) {
 
-                                        // FILTER LEVEL 3 (CHECK IF DATA CAN BE CONVERTED TO FLOAT AND INT)
-                                        try {
-                                            Float temperature = Float.valueOf(mapResult.get("Temp"));
-                                            int heart_rate = Integer.parseInt(mapResult.get("Hz"));
-                                            int oxygen_level = Integer.parseInt(mapResult.get("Spo2"));
+                                            // FILTER LEVEL 3 (CHECK IF DATA CAN BE CONVERTED TO FLOAT AND INT)
+                                            try {
+                                                Float temperature = Float.valueOf(mapResult.get("Temp"));
+                                                int heart_rate = Integer.parseInt(mapResult.get("Hz"));
+                                                int oxygen_level = Integer.parseInt(mapResult.get("Spo2"));
 
-                                            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result: " + mapResult + "+++++++++++++++++++++++++++++++++++++++++++");
-                                            publishProgress(mapResult); // send map to onProgressUpdate();
-                                        } catch (NumberFormatException e) {
-                                            // Gérez l'exception en cas d'échec de la conversion
-                                            System.out.println("++++++++++++++++++++++++++++++++++++ la conversion des données en nombre a échouer ++++++++++++++++++++++++++++++++++++");
-                                            e.printStackTrace();
+                                                System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result: " + mapResult + "+++++++++++++++++++++++++++++++++++++++++++");
+                                                publishProgress(mapResult); // send map to onProgressUpdate();
+                                            } catch (NumberFormatException e) {
+                                                // Gérez l'exception en cas d'échec de la conversion
+                                                System.out.println("++++++++++++++++++++++++++++++++++++ la conversion des données en nombre a échouer ++++++++++++++++++++++++++++++++++++");
+                                                e.printStackTrace();
+                                            }
+
+                                        } else {
+                                            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result n'est pas complet +++++++++++++++++++++++++++++++++++++++++++");
                                         }
 
-                                    } else {
-                                        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ Map Result n'est pas complet +++++++++++++++++++++++++++++++++++++++++++");
+                                        i = 0;
                                     }
+                                } else
+                                    System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ les données ne sont pas bien reçu, manque de : dans la chaine +++++++++++++++++++++++++++++++++++++++++++");
 
-                                    i = 0;
-                                }
-                            } else System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++ les données ne sont pas bien reçu, manque de : dans la chaine +++++++++++++++++++++++++++++++++++++++++++");
-
-                            all_data_received = "";
-                        }
+                                all_data_received = "";
+                            }
+//                        } catch (IOException e) {
+//                            Log.e("Bluetooth", "Fermeture de la connexion", e);
+//                            // Envoi du code 3(=MESSAGE_CLOSED_BLUETOOTH) lorsque la connexion a échouer
+//                            Intent intent1 = new Intent("bluetooth-event");
+//                            intent1.putExtra("event", BluetoothActivity.MESSAGE_CLOSED_BLUETOOTH); // ici MESSAGE_DISCONNECTED  a 3 comme valeur (on utilise le nom de la classe car c'est une variable static)
+//                            LocalBroadcastManager.getInstance(contextBluetoothActivity).sendBroadcast(intent);
+//                        }
                     }
-                }
+                } else sessionManager.isDisconnected();
             } catch (IOException e) {
                 Log.e("Bluetooth", "Erreur de connexion Bluetooth", e);
                 System.out.println("+++++++++++++++++++++++++++++ Connexion echouer ++++++++++++++++++++++++++++++");
 
-                // Envoi du code 2(=MESSAGE_DISCONNECTED) lorsque la connexion a échoué
-                // a faire
+                // Envoi du code 2(=MESSAGE_DISCONNECTED) lorsque la connexion a échouer
+                Intent intent = new Intent("bluetooth-event");
+                intent.putExtra("event", BluetoothActivity.MESSAGE_DISCONNECTED); // ici MESSAGE_DISCONNECTED  a deux comme valeur (on utilise le nom de la classe car c'est une variable static
+                LocalBroadcastManager.getInstance(contextBluetoothActivity).sendBroadcast(intent);
             }
             return null;
         }
@@ -222,17 +249,6 @@ public class BluetoothServiceThread extends Service {
             super.onProgressUpdate(values);
             //partager les données reçues avec le ViewModel
             patientViewModel.updateBluetoothData(values[0]); // we send the map to the viewModel
-        }
-
-        @Override
-        protected void onCancelled() {
-            try {
-                if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
-                    bluetoothSocket.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

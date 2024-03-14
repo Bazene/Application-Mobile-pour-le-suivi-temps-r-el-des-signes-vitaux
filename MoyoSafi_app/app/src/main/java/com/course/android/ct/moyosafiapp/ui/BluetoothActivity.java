@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.models.SessionManager;
@@ -34,6 +35,8 @@ public class BluetoothActivity extends AppCompatActivity {
 
     public static final int MESSAGE_CONNECTED = 1;
     public static final int MESSAGE_DISCONNECTED = 2;
+    public static final int MESSAGE_CLOSED_BLUETOOTH = 3;
+
     private SessionManager sessionManager;
     private PatientViewModel patientViewModel;
 
@@ -50,9 +53,7 @@ public class BluetoothActivity extends AppCompatActivity {
     TextView switch_text_view;
     TextView paired_devices_text;
     TextView new_device_name;
-    TextView text_connection;
     ListView listview_bluetooth_paired;
-    TextView text_input_stream;
     ScrollView scroll_paired_and_paired_new_device;
 
     Intent bt_enabling_intent;
@@ -67,16 +68,19 @@ public class BluetoothActivity extends AppCompatActivity {
             switch (eventType) {
                 case MESSAGE_CONNECTED:
                     String deviceName = intent.getStringExtra("deviceName");
-                    Toast.makeText(getApplicationContext(), "Connexion success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Connexion réussi à "+deviceName, Toast.LENGTH_SHORT).show();
                     listview_bluetooth_paired.setVisibility(View.GONE);
-                    text_connection.setText(deviceName+" - Connected");
-                    text_connection.setVisibility(View.VISIBLE);
                     sessionManager.setConnectedToDevice(true);
+
                     break;
 
                 case MESSAGE_DISCONNECTED:
-                    Toast.makeText(getApplicationContext(), "Error : Please connect to Device you paired with your phone", Toast.LENGTH_LONG).show();
-                    text_connection.setVisibility(View.GONE);
+                    Toast.makeText(getApplicationContext(), "Erreur : veillez vous connectez à un HC-05 couplé avec votre téléphone", Toast.LENGTH_LONG).show();
+                    sessionManager.isDisconnected();
+                    break;
+
+                case MESSAGE_CLOSED_BLUETOOTH:
+                    Toast.makeText(getApplicationContext(), "Connexion couper", Toast.LENGTH_LONG).show();
                     sessionManager.isDisconnected();
                     break;
             }
@@ -112,8 +116,6 @@ public class BluetoothActivity extends AppCompatActivity {
         scroll_paired_and_paired_new_device = (ScrollView) findViewById(R.id.scroll_paired_and_paired_new_device);
         paired_devices_text = (TextView) findViewById(R.id.paired_devices_text);
         new_device_name = (TextView) findViewById(R.id.new_device_name);
-        text_input_stream = (TextView) findViewById(R.id.text_input_stream);
-        text_connection = (TextView) findViewById(R.id.text_connection);
 
         bt_enabling_intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         request_code_for_enable = 1;
@@ -145,7 +147,6 @@ public class BluetoothActivity extends AppCompatActivity {
         for (Map.Entry<String, String> entry : bluetoothData.entrySet()) {
             stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
-        text_input_stream.setText(stringBuilder.toString());
     }
 
     private void connect_function() {
@@ -160,18 +161,13 @@ public class BluetoothActivity extends AppCompatActivity {
                 for (BluetoothDevice device : paired_devices) {
                     if(device.getName().equals(selectedDeviceName)) {
                         // Affichez l'élément dans un Toast ou effectuez toute autre action nécessaire
-                        Toast.makeText(getApplicationContext(), "Trying to connect with " + device.getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Tentative de connexion avec " + device.getName(), Toast.LENGTH_SHORT).show();
 
                         System.out.println("*********************** Trying to connect with "+ device.getName()+"*****************");
 
                         // *********************** CONNECTION ENTRE L'ACTIVITE ET LE SERVICE **************************
-//                        Intent serviceBluetoothIntent = new Intent(BluetoothActivity.this, BluetoothService.class); // Création d'une Intent pour démarrer le service Bluetooth
-//                        serviceBluetoothIntent.putExtra("SELECTED_BLUETOOTH_DEVICE", device); // Envoi des données (le BluetoothDevice) au service
-//
-//                        // Enregistrez le récepteur de diffusion locale (avant de demarrer le service)
-//                        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(bluetoothReceiver, new IntentFilter("bluetooth-event"));
-//
-//                        startService(serviceBluetoothIntent); // Démarrez le service
+                        // Enregistrez le récepteur de diffusion locale (avant de demarrer le service)
+                        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(bluetoothReceiver, new IntentFilter("bluetooth-event"));
 
                         // Partager le ViewModel avec le Service (par exemple, via l'injection de dépendances)
                         BluetoothServiceThread.startService(getApplicationContext(), patientViewModel, device);
@@ -221,10 +217,11 @@ public class BluetoothActivity extends AppCompatActivity {
                 }
                 else {
                     if (!myBluetoothAdapter.isEnabled()) { // Let's check whether Bluetooth is deactivated in order to activate it
+                        sessionManager.isDisconnected();
 
                         Drawable newIcon = getDrawable(R.drawable.group_switch_2);
                         switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                        text_disable_or_enable.setText("Enable");
+                        text_disable_or_enable.setText("Activé");
                         scroll_paired_and_paired_new_device.setVisibility(View.VISIBLE);
 
                         // active it
@@ -234,10 +231,12 @@ public class BluetoothActivity extends AppCompatActivity {
                     }
                     else if (myBluetoothAdapter.isEnabled()) {
                         myBluetoothAdapter.disable();
+                        sessionManager.isDisconnected();
+                        patientViewModel.deleteAllRealTimeVitalSignOnBluetoothServiceThread();
 
                         Drawable newIcon = getDrawable(R.drawable.group_switch_1);
                         switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                        text_disable_or_enable.setText("Disable");
+                        text_disable_or_enable.setText("Désactivé");
                         scroll_paired_and_paired_new_device.setVisibility(View.INVISIBLE);
 
                         Toast.makeText(getApplicationContext(), "Bluetooth is turning Off", Toast.LENGTH_LONG).show();
@@ -260,7 +259,7 @@ public class BluetoothActivity extends AppCompatActivity {
 //                Toast.makeText(BluetoothActivity.this, "Bluetooth is turning On", Toast.LENGTH_LONG).show();
 //                Drawable newIcon = getDrawable(R.drawable.group_switch_2);
 //                switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-//                text_disable_or_enable.setText("Enable");
+//                text_disable_or_enable.setText("Activé");
             }
             else if (resultCode == 0) { //RESULT_CANCELED = 0
                 Log.d("+++++++++++++++++++++++++++YourActivity", "Bluetooth activation request canceled++++++++++++++++++++++++");
@@ -271,6 +270,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     public void control_state_of_bluetooth_on_create_activity() {
         if (myBluetoothAdapter == null) {
+            sessionManager.isDisconnected();
             Toast.makeText(getApplicationContext(), "Bluetooth is not support on this Device", Toast.LENGTH_SHORT).show();
             switch_text_view.setClickable(false);
             Drawable newIcon = getDrawable(R.drawable.group_switch_3);
@@ -278,15 +278,17 @@ public class BluetoothActivity extends AppCompatActivity {
         }
         else {
             if (!myBluetoothAdapter.isEnabled()) { // Let's check whether Bluetooth is deactivated in order to activate it
+                sessionManager.isDisconnected();
+                patientViewModel.deleteAllRealTimeVitalSignOnBluetoothServiceThread();
                 Drawable newIcon = getDrawable(R.drawable.group_switch_1);
                 switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                text_disable_or_enable.setText("Disable");
+                text_disable_or_enable.setText("Désactivé");
                 scroll_paired_and_paired_new_device.setVisibility(View.INVISIBLE);
             }
             else if (myBluetoothAdapter.isEnabled()) {
                 Drawable newIcon = getDrawable(R.drawable.group_switch_2);
                 switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon, null);
-                text_disable_or_enable.setText("Enable");
+                text_disable_or_enable.setText("Activé");
                 scroll_paired_and_paired_new_device.setVisibility(View.VISIBLE);
             }
         }
@@ -305,9 +307,10 @@ public class BluetoothActivity extends AppCompatActivity {
                     switch (state) {
                         case BluetoothAdapter.STATE_OFF:
                             // Le Bluetooth a été désactivé
+                            patientViewModel.deleteAllRealTimeVitalSignOnBluetoothServiceThread();
                             Drawable newIcon_1 = getDrawable(R.drawable.group_switch_1);
                             switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon_1, null);
-                            text_disable_or_enable.setText("Disable");
+                            text_disable_or_enable.setText("Désactivé");
                             scroll_paired_and_paired_new_device.setVisibility(View.INVISIBLE);
                             break;
 
@@ -315,8 +318,7 @@ public class BluetoothActivity extends AppCompatActivity {
                             // Le Bluetooth a été activé
                             Drawable newIcon_2 = getDrawable(R.drawable.group_switch_2);
                             switch_text_view.setCompoundDrawablesWithIntrinsicBounds(null, null, newIcon_2, null);
-                            text_disable_or_enable.setText("Enable");
-                            text_connection.setVisibility(View.GONE);
+                            text_disable_or_enable.setText("Activé");
                             scroll_paired_and_paired_new_device.setVisibility(View.VISIBLE);
                             break;
                     }
@@ -348,7 +350,6 @@ public class BluetoothActivity extends AppCompatActivity {
                 } else {
                     System.out.println("+++++++++++++++++ wapi +++++++++++++++++++++");
                 }
-//                text_input_stream.setText(bluetoothData);
             }
         });
     }
@@ -356,14 +357,12 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Désenregistrez le récepteur de diffusion locale lors de la destruction du service
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(bluetoothReceiver); // Désenregistrez le récepteur de diffusion locale lors de la destruction du service
 
         // On désenregistre le BroadcastReceiver lors de la destruction de l'activité
         System.out.println("++++++++++++++++++++++++++++++++ on tu l'activité +++++++++++++++++++++++++++++");
         // conséquance (le bluetooth va se fermer)
 //        unregisterReceiver(bluetoothStateReceiver);
-//        patientViewModel.getBluetoothLiveData().removeObservers(this);
         patientViewModel.getBluetoothLiveData().removeObservers(this);
     }
 }

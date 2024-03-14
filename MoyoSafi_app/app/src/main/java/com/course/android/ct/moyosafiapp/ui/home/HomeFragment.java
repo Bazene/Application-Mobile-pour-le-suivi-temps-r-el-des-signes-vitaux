@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -90,7 +89,6 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
             tempRealTime = view.findViewById(R.id.tempRealTime);
 
 
-
             // ACTIONS
             // 1- to date_in_home_screen view
             LocalDateTime now = null; // date and actual time variable
@@ -128,7 +126,8 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
             });
 
 
-            patientViewModel.getLastVitalSignForUi().observe(getActivity(), new Observer<VitalSign>() {
+            int id_patient = sessionManager.getId_patient() ;
+            patientViewModel.getLastVitalSignForUi(id_patient).observe(getActivity(), new Observer<VitalSign>() {
                 @Override
                 public void onChanged(VitalSign vitalSign) {
                     if(vitalSign != null) {
@@ -147,7 +146,7 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
 
     // 2- Display dialog function
     private void openDialog() {
-        System.out.println("++++++++++++++++++++++++++ le dialogue est apple ++++++++++++++++++++++++++");
+        System.out.println("++++++++++++++++++++++++++ le dialogue est appele ++++++++++++++++++++++++++");
         VitalSignDialogFragment dialogFragment = new VitalSignDialogFragment(); // Instantiation of the dialog fragment
         dialogFragment.setListener(HomeFragment.this); // écouteur (listener) pour le DialogFragment
         dialogFragment.show(getChildFragmentManager(), "VitalSignDialogFragment"); // obtenir le gestionnaire de fragments spécifique à ce fragment et affichage du dialog
@@ -155,24 +154,8 @@ public class HomeFragment extends Fragment implements VitalSignDialogFragment.Vi
 
     // 3- we get the change in our fragment
     @Override
-    public void setTextOnMainView(String new_systol_value,String new_diastol_value, String new_glycemie_vital, Boolean nonVitalSignInRealtime) {
-        try {
-            if(nonVitalSignInRealtime) {
-                // Mettez à jour les TextView avec les nouvelles valeurs ici
-                int newSystolValue = (new_systol_value != null) ? Integer.parseInt(new_systol_value) : 0;
-                int newDiastolValue = (new_diastol_value != null) ? Integer.parseInt(new_diastol_value) : 0;
-                int newGlycemieValue = (new_glycemie_vital != null) ? Integer.parseInt(new_glycemie_vital) : 0;
-
-                Context context1 = getContext();
-
-                patientViewModel.insertOtherVitalSign(context1, newSystolValue, newDiastolValue, newGlycemieValue);
-            } else {
-                Toast.makeText(getContext(), "Aucune donnée enregistrer, connectez votre braclet avant d'entrer vos valeurs", Toast.LENGTH_LONG).show();
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Veillez remplire tout les champs", Toast.LENGTH_LONG).show();
-        }
+    public void setTextOnMainView(VitalSign vitalSign) {
+        patientViewModel.insertOtherVitalSign(vitalSign);
     }
 
     @Override

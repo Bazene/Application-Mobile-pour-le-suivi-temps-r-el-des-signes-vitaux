@@ -10,11 +10,11 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.course.android.ct.moyosafiapp.R;
 import com.course.android.ct.moyosafiapp.databinding.FragmentCreateAccountBinding;
+import com.course.android.ct.moyosafiapp.models.SessionManager;
 import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.viewModel.PatientViewModel;
@@ -22,8 +22,6 @@ import com.course.android.ct.moyosafiapp.viewModel.injections.ViewModelFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +34,7 @@ public class CreateAccountFragment extends Fragment {
     LoginFragment loginFragment = new LoginFragment(); // fragment
     FragmentCreateAccountBinding binding;
     PatientViewModel patientViewModel;
+    SessionManager sessionManager;
 
     // for mail
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
@@ -48,6 +47,8 @@ public class CreateAccountFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        sessionManager = SessionManager.getInstance(getContext());
+
         super.onCreate(savedInstanceState);
     }
 
@@ -123,54 +124,57 @@ public class CreateAccountFragment extends Fragment {
                     Patient new_patient = new Patient(user_name, past_name, sur_name, gender, mail_address, phone_number, user_password, date_created ,age_user, role);
 
 
-                        //*********************************************************************************************************
-                        // ********************************************** for remote **********************************************
-                        patientViewModel.createPatient(new_patient, new Callback<CreateAccountResponse>() {
-                            @Override
-                            public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
-                                // Gérer la réponse
-                                if (response.isSuccessful()) {
-                                    // Inscription réussie
-                                    System.out.println("++++++++++++++++++++++++++ l'inscription okey +++++++++++++++++++++++++");
-                                    System.out.println("++++++++++++++++++++++++++ "+response+"  +++++++++++++++++++++++++");
-                                    // success message
-                                    Toast.makeText(requireContext(), "La création du compte a reussi avec succès", Toast.LENGTH_LONG).show();
+                    //*********************************************************************************************************
+                    // ********************************************** for remote **********************************************
+                    patientViewModel.createPatient(new_patient, new Callback<CreateAccountResponse>() {
+                        @Override
+                        public void onResponse(Call<CreateAccountResponse> call, Response<CreateAccountResponse> response) {
+                            // Gérer la réponse
+                            if (response.isSuccessful()) {
+                                // Inscription réussie
+                                int patient_id = response.body().getPatient_id();
+                                sessionManager.setId_patient(patient_id);
 
-                                    // redirection to login fragment
-                                    LoginFragment loginFragment = new LoginFragment(); // get login fragment
-                                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                                    transaction.replace(R.id.authentification_frame_layout, loginFragment);
-                                    transaction.addToBackStack(null);  // Ajoute la transaction à la pile de retour
-                                    transaction.commit();
-                                }
+                                System.out.println("++++++++++++++++++++++++++ l'inscription okey +++++++++++++++++++++++++");
+                                System.out.println("++++++++++++++++++++++++++ Patient id "+patient_id+"+++++++++++++++++++++++++");
+                                // success message
+                                Toast.makeText(requireContext(), "La création du compte a reussi avec succès", Toast.LENGTH_LONG).show();
+
+                                // redirection to login fragment
+                                LoginFragment loginFragment = new LoginFragment(); // get login fragment
+                                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                transaction.replace(R.id.authentification_frame_layout, loginFragment);
+                                transaction.addToBackStack(null);  // Ajoute la transaction à la pile de retour
+                                transaction.commit();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
+                            // Gérer l'erreur
+                            String errorMessage = t.getMessage();
+                            if(errorMessage.equals("Patient Allready exist using the same mail address")) {
+                                binding.errorMessage.setVisibility(View.VISIBLE);
+                                binding.errorMessage.setText("Un patient utilisant le même addresse mail exist déjà");
+                                Toast.makeText(requireContext(), "Un patient utilisant le même addresse mail exist déjà", Toast.LENGTH_LONG).show();
                             }
 
-                            @Override
-                            public void onFailure(Call<CreateAccountResponse> call, Throwable t) {
-                                // Gérer l'erreur
-                                String errorMessage = t.getMessage();
-                                if(errorMessage.equals("Patient Allready exist using the same mail address")) {
-                                    binding.errorMessage.setVisibility(View.VISIBLE);
-                                    binding.errorMessage.setText("Un patient utilisant le même addresse mail exist déjà");
-                                    Toast.makeText(requireContext(), "Un patient utilisant le même addresse mail exist déjà", Toast.LENGTH_LONG).show();
-                                }
+                            else if(errorMessage.equals("Faild to create an account")) {
+                                binding.errorMessage.setVisibility(View.VISIBLE);
+                                binding.errorMessage.setText("Echec de création du compte, essayer encore");
+                                Toast.makeText(requireContext(), "Echec de création du compte, essayer encore", Toast.LENGTH_LONG).show();
 
-                                else if(errorMessage.equals("Faild to create an account")) {
-                                    binding.errorMessage.setVisibility(View.VISIBLE);
-                                    binding.errorMessage.setText("Echec de création du compte, essayer encore");
-                                    Toast.makeText(requireContext(), "Echec de création du compte, essayer encore", Toast.LENGTH_LONG).show();
-
-                                } else if (errorMessage.equals("Connectez-vous à l'internet")) {
-                                    System.out.println("++++++++++++++++++++++++++++++++++++++++"+errorMessage);
-                                    binding.errorMessage.setVisibility(View.VISIBLE);
-                                    binding.errorMessage.setText(errorMessage);
-                                    Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
-                                } else {
-                                    System.out.println("++++++++++++++++++++++++++++++++++++"+errorMessage);
-                                }
+                            } else if (errorMessage.equals("Connectez-vous à l'internet")) {
+                                System.out.println("++++++++++++++++++++++++++++++++++++++++"+errorMessage);
+                                binding.errorMessage.setVisibility(View.VISIBLE);
+                                binding.errorMessage.setText(errorMessage);
+                                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            } else {
+                                System.out.println("++++++++++++++++++++++++++++++++++++"+errorMessage);
                             }
-                        });
+                        }
+                    });
                 }
 
                 else {
@@ -189,35 +193,6 @@ public class CreateAccountFragment extends Fragment {
             binding.errorMessage.setText("Veillez remplir tout les champs");
             Toast.makeText(requireContext(), "Veillez remplir tout les champs", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    // FUNCTION THAT CHECK IF THE USER IS ALREADY IN DATA BASE OR NOT
-    private boolean isPatientExitInTable(LiveData<List<Patient>> allPatientsInTable, String mail_address){
-        AtomicBoolean return_value = new AtomicBoolean(false);
-
-        allPatientsInTable.observe(getActivity(), patients -> {
-            // Vérifiez si l'adresse e-mail existe déjà dans la liste des patients
-            boolean emailExists = patients.stream().anyMatch(patient -> patient.getPatient_mail().equals(mail_address));
-
-            if (emailExists) {
-                // Adresse e-mail déjà utilisée, ne pas autoriser la création du compte
-                if (patients.isEmpty()) {
-                    return_value.set(false);
-                }
-                return_value.set(true);
-            } else {
-                // Adresse e-mail non utilisée, autoriser la création du compte
-                return_value.set(false);
-
-            }
-        });
-
-        return return_value.get();
-    }
-
-    // FUNCTION FOR GETTING ALL PATIENT
-    private LiveData<List<Patient>> getAllPatients() {
-        return this.patientViewModel.getAllPatients();
     }
 
     // FUNCTION FOR MAIL CHECK

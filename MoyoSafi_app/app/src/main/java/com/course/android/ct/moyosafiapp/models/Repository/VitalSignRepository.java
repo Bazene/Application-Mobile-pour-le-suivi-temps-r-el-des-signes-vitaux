@@ -8,6 +8,8 @@ import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Flowable;
+
 public class VitalSignRepository {
 
     // VARIABLES
@@ -23,8 +25,8 @@ public class VitalSignRepository {
     }
 
     // FUNCTIONS
-    public LiveData<VitalSign> getLastVitalSignForUi() {
-        return vitalSignDao.getLastVitalSignForUi();
+    public LiveData<VitalSign> getLastVitalSignForUi(int id_patient) {
+        return vitalSignDao.getLastVitalSignForUi(id_patient);
     }
 
     public VitalSign getLastVitalSignMedium() {
@@ -39,12 +41,20 @@ public class VitalSignRepository {
         vitalSignDao.updateVitalSign(vitalSing);
     }
 
-    // 1-
     public void insertVitalSign(VitalSign vitalSign) {
         vitalSignDao.insert(vitalSign);
     }
 
-    // 2-
+    public void insertOtherVitalSign(VitalSign vitalSign) {
+        vitalSignDao.insertOtherVitalSign(vitalSign);
+    }
+
+    // for observing data using Rx Java
+    public Flowable<VitalSign> observeChangesOfVitalSign() {
+        return vitalSignDao.getLastVitalSignForCalcul();
+    }
+
+
     public void deleteVitalSign(VitalSign vitalSign) {
         vitalSignDao.delete(vitalSign);
     }

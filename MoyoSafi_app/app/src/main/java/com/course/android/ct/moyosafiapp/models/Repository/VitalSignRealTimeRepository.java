@@ -24,7 +24,7 @@ public class VitalSignRealTimeRepository {
     }
 
     public void deleteAllRealTimeVitalSign() {
-//        vitalSignRealTimeDao.deleteAllRealTimeVitalSign();
+        vitalSignRealTimeDao.deleteAllRealTimeVitalSign();
     }
 
     // 2- update vital sign in real time
