@@ -18,34 +18,28 @@ public class NotificationsRepository {
     }
 
     // FUNCTIONS
-    // 1-
     public void insertNotifications(Notifications notification) {
         notificationsDao.insert(notification);
     }
 
-    // 2-
+    public LiveData<List<Notifications>> getAllNotifications() {
+        return notificationsDao.getAllNotifications();
+    }
+
     public void deleteNotifications(Notifications notification) {
         notificationsDao.deleteNotification(notification);
     }
 
-    // 3-
     public void deleteNotificationPerDate(String notification_date) {
         notificationsDao.deleteNotificationPerDate(notification_date);
     }
 
-    // 4-
     public void deleteAllNotifications() {
         notificationsDao.deleteAllNotifications();
     }
 
-    // 5-
     public LiveData<Notifications> getNotification(int id) {
         return notificationsDao.getNotification(id);
-    }
-
-    // 6-
-    public LiveData<List<Notifications>> getNotificationsSortedByDateTime() {
-        return notificationsDao.getNotificationsSortedByDateTime();
     }
 
 }

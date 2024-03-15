@@ -15,6 +15,9 @@ public interface NotificationsDao {
     @Insert
     void insert(Notifications notifications);
 
+    @Query("SELECT * FROM notifications ORDER BY notification_date DESC, notification_time DESC")
+    LiveData<List<Notifications>> getAllNotifications();
+
     @Delete
     void deleteNotification(Notifications notifications);
 
@@ -26,7 +29,4 @@ public interface NotificationsDao {
 
     @Query("SELECT * FROM notifications WHERE id=:id")
     LiveData<Notifications> getNotification(int id);
-
-    @Query("SELECT * FROM notifications ORDER BY notification_date DESC, notification_time DESC")
-    LiveData<List<Notifications>> getNotificationsSortedByDateTime();
 }

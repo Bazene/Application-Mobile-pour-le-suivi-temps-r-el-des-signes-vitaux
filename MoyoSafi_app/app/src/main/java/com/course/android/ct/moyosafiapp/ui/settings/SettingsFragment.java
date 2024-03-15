@@ -47,8 +47,8 @@ public class SettingsFragment extends Fragment {
 
     // FUNCTIONS
     // 1- first function
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Inflate the layout for this fragment
             binding = FragmentSettingsBinding.inflate(getLayoutInflater());
 //            View view = inflater.inflate(R.layout.fragment_settings, container, false); // our view (fragment_layout)
@@ -84,7 +84,7 @@ public class SettingsFragment extends Fragment {
                     SessionManager.getInstance(getContext()).remoteId_patient();
                     
                     binding.bluetoothTextConDis.setText("déconnecté");
-                    
+
                     System.out.println("+++++++++++++++++++++++ le patient est deconnecté :"+sessionManager.getUser_name()+"++++++");
                     Intent intent = new Intent(getActivity().getApplicationContext(), AuthentificationActivity.class); // we take the Authentification activity
                     startActivity(intent);

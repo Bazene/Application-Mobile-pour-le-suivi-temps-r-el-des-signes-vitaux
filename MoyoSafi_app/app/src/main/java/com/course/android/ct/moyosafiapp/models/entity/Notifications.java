@@ -24,8 +24,9 @@ public class Notifications {
     }
 
     // CONSTRUCT
-    public Notifications(int id_patient, String notification_content, String notification_date, String notification_time) {
+    public Notifications(int id_patient, int id_vitalSign, String notification_content, String notification_date, String notification_time) {
         this.id_patient = id_patient;
+        this.id_vitalSign = id_vitalSign;
         this.notification_content = notification_content;
         this.notification_date = notification_date;
         this.notification_time = notification_time;
@@ -46,6 +47,22 @@ public class Notifications {
 
     public void setId_patient(int id_patient) {
         this.id_patient = id_patient;
+    }
+
+    public int getId_vitalSign() {
+        return id_vitalSign;
+    }
+
+    public void setId_vitalSign(int id_vitalSign) {
+        this.id_vitalSign = id_vitalSign;
+    }
+
+    public int getId_doctor() {
+        return id_doctor;
+    }
+
+    public void setId_doctor(int id_doctor) {
+        this.id_doctor = id_doctor;
     }
 
     public String getNotification_content() {

@@ -17,12 +17,14 @@ import com.course.android.ct.moyosafiapp.models.api.CreateAccountResponse;
 import com.course.android.ct.moyosafiapp.models.api.LogPatientResponse;
 import com.course.android.ct.moyosafiapp.models.api.UpdatePatientPictureResponse;
 import com.course.android.ct.moyosafiapp.models.api.UpdatePatientResponse;
+import com.course.android.ct.moyosafiapp.models.entity.Notifications;
 import com.course.android.ct.moyosafiapp.models.entity.Patient;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSign;
 import com.course.android.ct.moyosafiapp.models.entity.VitalSignRealTime;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,7 +67,8 @@ public class PatientViewModel extends ViewModel {
         observeChangesOnVitalSing();
     }
 
-    // FUNCTIONS
+
+    // ***************************************************************** FUNCTIONS *********************************************************************
 
     // -----------------------------------------------------------------------------------------------------------
     // 1- FOR PATIENT
@@ -78,7 +81,7 @@ public class PatientViewModel extends ViewModel {
     public int getIdPatient(String token) {
         return patientRepository.getIdPatient(token);
     }
-    
+
 
     //*********************************************************************************************************
     // ********************************************** for remote **********************************************
@@ -173,7 +176,10 @@ public class PatientViewModel extends ViewModel {
                             // abonnement à l'Observable. La fonction lambda fournie sera exécutée chaque fois que l'Observable émettra une notification
 
                             newVitalSign [0] = vitalSign;
-                            Log.d("YourViewModel", "++++++++++++++++++++++ Changement détecté dans la base de données. Temp : "+vitalSign.getTemperature()+"+++++++++++++++++++++++++++++++");
+
+                            // we call the function that allow as check if we can create a notification
+                            notificationFunction(vitalSign);
+
                         })
         );
     }
@@ -277,9 +283,57 @@ public class PatientViewModel extends ViewModel {
 
 
     // -----------------------------------------------------------------------------------------------------------
-    //  FOR NOTIFICATIONS
+    //  FOR NOTIFICATIONS (WE NOTIFY ONLY NI CRITIQUE MOMENT)
     // -----------------------------------------------------------------------------------------------------------
-    public void inspectNotification() {
+    public void notificationFunction(VitalSign vitalSign) {
+        // we get all vitalSign
+        int heart_rate = vitalSign.getHeart_rate();
+        int spo2 = vitalSign.getOxygen_level();
+        float temperature = vitalSign.getTemperature();
+        int systolic = vitalSign.getSystolic_blood();
+        int diastolic = vitalSign.getDiastolic_blood();
+        int glycemie = vitalSign.getBlood_glucose();
 
+        String contentNotification = "";
+
+        // 1. we verify the heart rate
+        if( heart_rate != 0) {
+            if (heart_rate < 50) contentNotification = contentNotification+"Fréquence cardiaque faible : "+heart_rate+" BPM \n";
+            else if (heart_rate > 50) contentNotification = contentNotification+ "Fréquence cardiaque élevée : "+heart_rate+" BPM \n";
+        }
+
+        // 2. we verify the oxygen level
+        if (spo2 != 0) {
+            if(spo2 < 90) contentNotification = contentNotification+ "Saturation en oxygène faible : "+spo2+" %\n";
+        }
+
+        // 3. we verify the temperature
+        if (temperature != 0) {
+            if(temperature < 36) contentNotification = contentNotification+ "Temperature faible : "+temperature+" °C\n";
+            else if (temperature > 38) contentNotification = contentNotification+ "Temperature élevée : "+temperature+" °C\n";
+        }
+
+        // 4. we verify the systolic and diastolic values
+        if (systolic != 0 && diastolic != 0) {
+            if(systolic <= 90 && diastolic <= 60 ) contentNotification = contentNotification+ "Tension artérielle faible : "+systolic+"/"+diastolic+" mmHg\n";
+            else if (systolic >= 140 && diastolic >= 90 ) contentNotification = contentNotification+ "Tension artérielle élevée : "+systolic+"/"+diastolic+" mmHg\n";
+        }
+
+        // 5. we verify the glycemie
+        if (glycemie != 0) {
+            if(glycemie <= 70) contentNotification = contentNotification+ "Glycémie faible : "+glycemie+" mg/dL\n";
+            else if (glycemie >= 110) contentNotification = contentNotification+ "Glycémie Elevé : "+glycemie+" mg/dL\n";
+        }
+
+        // we create a notification
+        if(contentNotification != "") {
+            Notifications notification = new Notifications(vitalSign.getId_patient(), vitalSign.getId(), contentNotification, vitalSign.getVital_date(), vitalSign.getVital_hour());
+
+            notificationsRepository.insertNotifications(notification);
+        }
+    }
+
+    public LiveData<List<Notifications>> getAllNotifications() {
+        return notificationsRepository.getAllNotifications();
     }
 }
